@@ -1,0 +1,37 @@
+/* Reutilizamos los estilos de fuente y cabecera */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.actions a {
+    text-decoration: none;
+    color: #555;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.actions a:hover {
+    color: #000;
+}
+
+/* Efecto para las imágenes técnicas */
+.shadow-sm {
+    transition: transform 0.3s ease;
+}
+
+.shadow-sm:hover {
+    transform: scale(1.03);
+}
+
+/* Botón Dark Estilo Miel-api */
+.btn-dark {
+    background-color: #333;
+    border: none;
+    border-radius: 4px;
+    letter-spacing: 1px;
+    font-size: 0.9rem;
+}
+
+.btn-dark:hover {
+    background-color: #000;
+}

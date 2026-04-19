@@ -1,0 +1,39 @@
+/* Estilo para los botones principales */
+.btn-dark {
+    background-color: #444;
+    border: none;
+    padding: 10px 30px;
+    border-radius: 5px;
+}
+
+.btn-light {
+    background-color: #e9ecef;
+    border: none;
+    padding: 10px 30px;
+    border-radius: 5px;
+}
+
+/* Ajuste de los radio buttons */
+.form-check-input:checked {
+    background-color: #333;
+    border-color: #333;
+}
+
+/* Campos de entrada más limpios */
+.form-control {
+    border-radius: 4px;
+    font-size: 0.9rem;
+    padding: 8px 12px;
+}
+
+/* Contenedores de tarjeta */
+.card {
+    border-radius: 4px;
+    background-color: #fff;
+}
+
+/* Ajuste de logo en header */
+header .actions a {
+    text-decoration: underline;
+    font-size: 0.85rem;
+}

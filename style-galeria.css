@@ -1,0 +1,48 @@
+/* --- CONFIGURACIÓN DEL CARRUSEL --- */
+
+/* Contenedor del carrusel para limitar el ancho máximo en pantallas grandes */
+#carouselEvento {
+    max-width: 900px;
+    margin: 0 auto;
+    overflow: hidden;
+    background-color: #fff;
+}
+
+/* El secreto: Un contenedor con altura fija para la imagen */
+.img-wrapper {
+    width: 100%;
+    height: 500px; /* Ajusta esta altura según prefieras */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f0f0f0; /* Color de fondo por si la imagen es vertical */
+}
+
+.img-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Cambia a 'contain' si no quieres que se corte nada de la foto */
+    display: block;
+}
+
+/* Estilo para el texto debajo de la imagen */
+.custom-caption {
+    border-top: 1px solid #eee;
+}
+
+.custom-caption h5 {
+    color: #212529;
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+
+.custom-caption p {
+    font-size: 0.9rem;
+}
+
+/* Ajustes para móviles */
+@media (max-width: 768px) {
+    .img-wrapper {
+        height: 300px; /* Altura más pequeña en celulares */
+    }
+}

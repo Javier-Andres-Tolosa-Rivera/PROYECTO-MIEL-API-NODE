@@ -1,0 +1,75 @@
+body {
+    background-color: #ffffff;
+    color: #333;
+    font-family: Arial, sans-serif;
+}
+
+/* Buscador */
+.search-pill {
+    background-color: #f8f9fa;
+    max-width: 300px;
+}
+
+.search-pill input::placeholder {
+    font-weight: bold;
+    color: #000;
+}
+
+/* Tarjetas de Producto */
+.x-small {
+    font-size: 0.7rem;
+    letter-spacing: 0.5px;
+}
+
+/* --- Ajustes de Uniformidad para Imágenes --- */
+
+/* Contenedor para la imagen principal (la grande de la izquierda) */
+.card-body img {
+    width: 100%;
+    height: 300px; /* Altura fija para que no dependa de la foto original */
+    object-fit: contain; /* Muestra el producto completo sin deformarlo */
+    padding: 10px;
+}
+
+/* Contenedor para las imágenes pequeñas de la derecha */
+.img-container-small {
+    width: 100%;
+    height: 160px; /* Aumentamos la altura para que la imagen destaque más */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #fff;
+    overflow: hidden;
+}
+
+.img-container-small img {
+    max-width: 95%;
+    max-height: 95%;
+    object-fit: contain; /* Mantiene la proporción sin estirar */
+}
+
+.product-card-small {
+    transition: transform 0.2s;
+}
+
+.product-card-small:hover {
+    transform: translateY(-5px); /* Pequeño efecto visual al pasar el mouse */
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+/* Footer específico del catálogo */
+footer {
+    border-top: 2px solid #eee;
+}
+
+footer a:hover {
+    color: #000 !important;
+    text-decoration: underline !important;
+}
+
+/* Ajuste del botón del carrito */
+.btn-dark {
+    border-radius: 4px;
+    font-weight: bold;
+    letter-spacing: 1px;
+}

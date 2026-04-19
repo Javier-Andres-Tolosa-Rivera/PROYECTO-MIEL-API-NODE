@@ -1,0 +1,102 @@
+/* --- ESTILOS GENERALES Y FUENTES --- */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #fcfcfc;
+}
+
+/* --- 1. BARRA SUPERIOR NEGRA --- */
+.top-bar {
+    background-color: #212529;
+}
+
+/* --- 2. CABECERA PRINCIPAL (Ajustada para línea única) --- */
+.main-header {
+    background-color: #ffffff;
+}
+
+/* Forzamos que los elementos no salten de línea */
+.flex-nowrap {
+    flex-wrap: nowrap !important;
+}
+
+.text-nowrap {
+    white-space: nowrap !important;
+}
+
+/* Buscador optimizado */
+.search-bar {
+    flex-grow: 1;
+    max-width: 600px; /* Un poco más ancho para aprovechar el espacio */
+    margin: 0 20px;   /* Espacio a los lados */
+}
+
+/* Contenedor de iconos de acción a la derecha */
+.actions {
+    display: flex;
+    align-items: center;
+    gap: 20px; /* Espaciado entre Iniciar Sesión y Carrito */
+}
+
+.actions a {
+    font-size: 0.9rem;
+    font-weight: bold;
+    color: #333;
+    text-decoration: none;
+}
+
+/* Estilo del Badge (Número del carrito) como en tu imagen */
+.cart-icon .badge {
+    font-size: 0.6rem;
+    padding: 3px 6px;
+    border-radius: 50px;
+    background-color: #333 !important; /* Color oscuro como el logo */
+}
+
+/* --- 3. MENÚ DE NAVEGACIÓN --- */
+.sub-nav .nav-link {
+    font-size: 0.9rem;
+    padding-bottom: 5px;
+    color: #555;
+    font-weight: 500;
+}
+
+.sub-nav .nav-link:hover,
+.sub-nav .nav-link.active {
+    color: #212529 !important;
+}
+
+/* --- 4. SECCIÓN DE NOTICIAS, GALERÍA Y FOOTER (Mantener igual) --- */
+.noticias-section { background-color: #ffffff; }
+.noticias-section .text-primary { color: #0d6efd !important; }
+.action-buttons .btn { border-radius: 0; font-size: 0.9rem; }
+
+.gallery-item-btn {
+    transition: transform 0.2s, box-shadow 0.2s;
+    display: block;
+    border: none;
+    padding: 0;
+    background: none;
+}
+
+.gallery-item-btn img {
+    width: 100%;
+    height: auto;
+    display: block;
+    object-fit: cover;
+}
+
+.gallery-item-btn:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.main-footer { font-size: 0.9rem; }
+.social-icons a:hover { opacity: 0.7; }
+
+/* --- DISEÑO RESPONSIVO --- */
+@media (max-width: 992px) {
+    /* En tablets, permitimos que el buscador sea más pequeño para no empujar los iconos */
+    .search-bar {
+        max-width: 300px;
+    }
+}

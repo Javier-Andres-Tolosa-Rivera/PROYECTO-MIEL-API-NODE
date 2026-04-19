@@ -1,0 +1,10 @@
+{
+  "name": "miel-server",
+  "version": "1.0.0",
+  "description": "Servidor para proyecto Miel-API",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {}
+}

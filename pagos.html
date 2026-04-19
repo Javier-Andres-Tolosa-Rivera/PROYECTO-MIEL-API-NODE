@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Miel-api | Opciones de Pago</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="style-pagos.css">
+</head>
+<body class="bg-light">
+
+    <header class="bg-white py-3 border-bottom">
+        <div class="container-fluid px-4 d-flex justify-content-between align-items-center flex-nowrap">
+            <img src="./images/Logo Miel-API - pequeño.png" alt="Miel-api" height="45">
+            <div class="flex-grow-1 mx-4" style="max-width: 500px;">
+                <input type="text" class="form-control rounded-pill" placeholder="BUSCAR">
+            </div>
+            
+            <div class="d-flex align-items-center text-nowrap actions">
+                <a href="./index.html" class="text-dark text-decoration-none me-3"><strong>INICIO</strong></a>
+                <a href="./registro.html" class="text-dark text-decoration-none me-3"><strong>LOGIN/REGISTRAR</strong></a>
+                <a href="./productos.html" class="text-dark text-decoration-none me-3"><strong>CATALOGO PRODUCTOS</strong></a>
+            </div>
+        </div>
+    </header>
+
+    <main class="container my-5">
+        <div class="text-center mb-4">
+            <p class="text-muted fw-bold">OPCIONES DE PAGO</p>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-7">
+                <h4 class="fw-bold mb-4">Metodos de Pago</h4>
+                
+                <div class="payment-methods">
+                    <div class="card mb-3 p-3 border-secondary border-opacity-25">
+                        <div class="form-check d-flex align-items-start">
+                            <input class="form-check-input me-3 mt-1" type="radio" name="payMethod" id="card" checked>
+                            <label class="form-check-label w-100" for="card">
+                                <span class="d-block fw-bold text-muted">Tarjeta de Crédito Digital Davivienda</span>
+                                <span class="small text-muted d-block mb-3">Ingrese los datos de la tarjeta</span>
+                                
+                                <div class="row g-2">
+                                    <div class="col-12">
+                                        <input type="text" class="form-control" placeholder="0000 0000 0000 0000">
+                                    </div>
+                                    <div class="col-6 col-md-4">
+                                        <input type="text" class="form-control" placeholder="MM / YY">
+                                    </div>
+                                    <div class="col-6 col-md-4">
+                                        <input type="text" class="form-control" placeholder="CVV">
+                                    </div>
+                                    <div class="col-12">
+                                        <input type="text" class="form-control" placeholder="Titular de la tarjeta">
+                                    </div>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="card mb-3 p-3 border-secondary border-opacity-25">
+                        <div class="form-check d-flex align-items-center">
+                            <input class="form-check-input me-3" type="radio" name="payMethod" id="pse">
+                            <img src="./images/PSE.png" alt="PSE" class="me-3" style="height: 50px;">
+                            <label class="form-check-label" for="pse">
+                                <span class="fw-bold text-muted">PSE</span>
+                                <span class="small text-muted d-block">Paga con tu cuenta bancaria a través de PSE</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="card mb-3 p-3 border-secondary border-opacity-25">
+                        <div class="form-check d-flex align-items-center">
+                            <input class="form-check-input me-3" type="radio" name="payMethod" id="daviplata">
+                            <img src="./images/daviplata.png" alt="Daviplata" class="me-3" style="height: 50px;">
+                            <label class="form-check-label" for="daviplata">
+                                <span class="fw-bold text-muted">DAVIPLATA</span>
+                                <span class="small text-muted d-block">Paga a través de Daviplata</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="card mb-3 p-3 border-secondary border-opacity-25">
+                        <div class="form-check d-flex align-items-center">
+                            <input class="form-check-input me-3" type="radio" name="payMethod" id="nequi">
+                            <img src="./images/nequi.jpg" alt="Nequi" class="me-3" style="height: 50px;">
+                            <label class="form-check-label" for="nequi">
+                                <span class="fw-bold text-muted">NEQUI</span>
+                                <span class="small text-muted d-block">Paga a través de tu NEQUI</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-4 d-flex gap-3">
+                    <button class="btn btn-dark px-5">Pagar Ahora</button>
+                    <a href="./carrito.html" class="btn btn-light border px-5">CANCELAR</a>
+                </div>
+            </div>
+
+
+            <div class="col-md-4">
+    <h4 class="fw-bold mb-4 text-uppercase">Tu Pedido</h4>
+    <div class="resumen-container p-3 bg-white border rounded">
+        <div id="lista-productos-pago">
+            </div>
+        <hr>             
+        <div class="d-flex justify-content-between align-items-center mt-3">
+            <h4 class="fw-bold text-muted">TOTAL A PAGAR</h4>
+            <h4 class="fw-bold" id="granTotalPago">$0</h4>
+        </div>
+    </div>
+</div>
+
+        </div>
+    </main>
+
+    <script>
+    // 1. Base de datos de precios (debe coincidir con la de carrito.html)
+    // Cuando pasemos a MIEL_API3, esto vendrá de la BD.
+    const PRECIOS_PRODUCTOS = {
+        'p1': 30000, // Litro de Miel
+        'p2': 30000, // Jalea Real (según tu imagen, ambos están a 30k)
+        'p3': 30000,
+        'p4': 30000,
+        'p5': 30000,
+        'p6': 100000, // Abeja Reina
+        'p7': 30000,
+        'p8': 20000,  // Apitoxina
+        'p9': 6000    // Jabón
+    };
+
+    // 2. Nombres de productos para el resumen
+    const NOMBRES_PRODUCTOS = {
+        'p1': 'MIEL LITRO',
+        'p2': 'JALEA REAL',
+        'p3': 'PROPOLEO',
+        'p4': 'CERA DE ABEJA',
+        'p5': 'MIEL ANGELITA',
+        'p6': 'ABEJA REINA',
+        'p7': 'POLEN',
+        'p8': 'APITOXINA GEL',
+        'p9': 'JABON API-REAL'
+    };
+
+    function sincronizarPago() {
+    const carritoRaw = localStorage.getItem('miel_carrito');
+    const listaProductosContenedor = document.getElementById('lista-productos-pago');
+    const granTotalPagoElement = document.getElementById('granTotalPago');
+
+    if (!carritoRaw || carritoRaw === '{}') {
+        listaProductosContenedor.innerHTML = '<p class="text-muted small">No hay productos seleccionados</p>';
+        return;
+    }
+
+    const carrito = JSON.parse(carritoRaw);
+    let totalGeneral = 0;
+    let htmlFinal = "";
+
+    for (const id in carrito) {
+        const cantidad = carrito[id];
+        
+        if (cantidad > 0) {
+            const precioUnitario = PRECIOS_PRODUCTOS[id] || 0;
+            const nombreProducto = NOMBRES_PRODUCTOS[id] || "Producto";
+            const subtotal = precioUnitario * cantidad;
+            totalGeneral += subtotal;
+
+            // Generamos una sola línea por producto, con negrita y formato limpio
+            htmlFinal += `
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="fw-bold text-uppercase small">${nombreProducto} (x${cantidad})</span>
+                    <span class="fw-bold small">$${subtotal.toLocaleString('es-CO')}</span>
+                </div>
+            `;
+        }
+    }
+
+    // Insertar el contenido una sola vez
+    listaProductosContenedor.innerHTML = htmlFinal;
+    
+    // Actualizar el Gran Total
+    granTotalPagoElement.innerText = '$' + totalGeneral.toLocaleString('es-CO');
+}
+
+    // Ejecutar la sincronización al cargar la página de pagos
+    window.onload = sincronizarPago;
+</script>
+
+</body>
+</html>

@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Miel-API | Gestión de Inventarios</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .sidebar { background: #f8f9fa; min-height: 100vh; border-right: 1px solid #dee2e6; }
+        .table-container { background: white; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .stock-bajo { 
+         color: #dc3545 !important; /* Un rojo más estándar de Bootstrap */
+         font-weight: bold !important; 
+            }
+    </style>
+
+</head>
+<body class="bg-light">
+    <div class="container-fluid">
+        <div class="row">
+            <nav class="col-md-2 d-none d-md-block sidebar p-4">
+                <h5 class="fw-bold">MIEL-API ADMIN</h5>
+                <ul class="nav flex-column mt-4">
+                    <li class="nav-item mb-2"><a href="./admin.html" class="nav-link link-secondary">Gestión Usuarios</a></li>
+                    <li class="nav-item mb-2"><a href="./inventarios.html" class="nav-link active link-dark fw-bold">Inventarios</a></li>
+                    <hr>
+                    <li class="nav-item mb-2"><a href="./productos.html" class="nav-link link-secondary">Ver Tienda</a></li>
+                </ul>
+            </nav>
+
+            <main class="col-md-10 p-5">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <button class="btn btn-warning fw-bold text-uppercase" 
+                        data-bs-toggle="modal" 
+                        data-bs-target="#modalProducto" 
+                        onclick="document.getElementById('formAgregarProducto').reset(); editando=false; document.getElementById('modalTitulo').innerText='🍯 Gestión de Producto'">
+                        + Agregar Producto
+                    </button>
+                    <h2 class="fw-bold">Control de Inventarios (Stock)</h2>
+                    <button class="btn btn-warning fw-bold text-uppercase" data-bs-toggle="modal" data-bs-target="#modalProducto">+ Agregar Producto</button>
+                </div>
+
+                <div class="table-container p-4">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>ID</th>
+                                <th>Producto</th>
+                                <th>Tipo</th>
+                                <th>Peso</th>
+                                <th>Precio (Unidad)</th>
+                                <th>Stock</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabla-inventario">
+                            </tbody>
+                    </table>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalProducto" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-warning">
+        <h5 class="modal-title fw-bold" id="modalTitulo">🍯 Gestión de Producto</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form id="formAgregarProducto">
+        <input type="hidden" id="edit-id">
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label">Tipo de Producto</label>
+            <input type="text" id="tipo" class="form-control" placeholder="Ej: Miel de Abejas" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Nombre</label>
+            <input type="text" id="nombre" class="form-control" placeholder="Ej: Miel de Café" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Peso/Medida</label>
+            <input type="text" id="peso" class="form-control" placeholder="Ej: 500g" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Precio ($)</label>
+            <input type="number" id="precio" class="form-control" step="0.01" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Stock Inicial</label>
+            <input type="number" id="stock" class="form-control" required>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-warning fw-bold">Guardar Producto</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+    <script>
+
+        // Función para traer los productos y dibujarlos en la tabla
+async function cargarInventario() {
+    try {
+        const res = await fetch('http://127.0.0.1:3000/api/productos');
+        const productos = await res.json();
+        const tabla = document.getElementById('tabla-inventario');
+        tabla.innerHTML = ''; // Limpiar tabla antes de cargar
+
+        productos.forEach(p => {
+            // Verificamos si el stock es bajo para aplicar tu estilo rojo
+            const claseStock = p.cantidad_unidad <= 15 ? 'stock-bajo' : '';
+
+            tabla.innerHTML += `
+                <tr>
+                    <td>${p.id_producto}</td>
+                    <td>${p.nombre_producto}</td>
+                    <td>${p.tipo}</td>
+                    <td>${p.peso_producto}</td>
+                    <td>$${p.precio_unidad}</td>
+                    <td class="${claseStock}">${p.cantidad_unidad}</td>
+                    <td>
+                        <button class="btn btn-outline-primary btn-sm" 
+                            onclick="prepararEdicion(${p.id_producto}, '${p.tipo}', '${p.nombre_producto}', '${p.peso_producto}', ${p.precio_unidad}, ${p.cantidad_unidad})">
+                            Editar
+                        </button>
+                        <button class="btn btn-outline-danger btn-sm" onclick="eliminarProducto(${p.id_producto})">
+                            Eliminar
+                        </button>
+                    </td>
+                </tr>
+            `;
+        });
+    } catch (error) {
+        console.error("Error al cargar inventario:", error);
+    }
+}
+
+// Ejecutar la carga apenas abra la página
+cargarInventario();
+
+
+        // Variable para saber si estamos editando
+let editando = false;
+
+// Función que se activa al presionar el botón azul "Editar" de la tabla
+async function prepararEdicion(id, tipo, nombre, peso, precio, stock) {
+    editando = true;
+    document.getElementById('modalTitulo').innerText = "🔄 Editar Producto";
+    
+    // Llenamos los campos con los datos actuales
+    document.getElementById('edit-id').value = id;
+    document.getElementById('tipo').value = tipo;
+    document.getElementById('nombre').value = nombre;
+    document.getElementById('peso').value = peso;
+    document.getElementById('precio').value = precio;
+    document.getElementById('stock').value = stock;
+
+    // Abrimos el modal manualmente
+    const modal = new bootstrap.Modal(document.getElementById('modalProducto'));
+    modal.show();
+}
+
+// Modificamos el evento submit del formulario
+document.getElementById('formAgregarProducto').addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const producto = {
+        tipo: document.getElementById('tipo').value,
+        nombre_producto: document.getElementById('nombre').value,
+        peso_producto: document.getElementById('peso').value,
+        precio_unidad: document.getElementById('precio').value,
+        cantidad_unidad: document.getElementById('stock').value
+    };
+
+    const id = document.getElementById('edit-id').value;
+    const url = editando ? `http://127.0.0.1:3000/api/productos/${id}` : 'http://127.0.0.1:3000/api/productos';
+    const metodo = editando ? 'PUT' : 'POST';
+
+    try {
+        const res = await fetch(url, {
+            method: metodo,
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(producto)
+        });
+
+        if (res.ok) {
+            alert(editando ? "✅ Producto actualizado" : "✅ Producto guardado");
+            location.reload();
+        }
+    } catch (error) {
+        console.error("Error:", error);
+    }
+});
+
+// === Funcion de Eliminar ===
+async function eliminarProducto(id) {
+    if (confirm(`¿Estás seguro de eliminar el producto con ID ${id}?`)) {
+        try {
+            const res = await fetch(`http://127.0.0.1:3000/api/productos/${id}`, {
+                method: 'DELETE'
+            });
+
+            if (res.ok) {
+                alert("✅ Producto eliminado correctamente");
+                cargarInventario(); // Esto recarga la tabla sin refrescar toda la página
+            } else {
+                alert("❌ Error al eliminar el producto");
+            }
+        } catch (error) {
+            console.error("Error de red:", error);
+            alert("No se pudo conectar con el servidor");
+        }
+    }
+}
+// ======================================
+
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

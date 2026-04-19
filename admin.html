@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Miel-api | Panel de Administración</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .sidebar { background: #f8f9fa; min-height: 100vh; border-right: 1px solid #dee2e6; }
+        .table-container { background: white; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .rol-badge { padding: 5px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; }
+        .bg-admin { background: #ffeeba; color: #856404; } /* Color para Administradores */
+    </style>
+</head>
+<body class="bg-light">
+
+<div class="container-fluid">
+    <div class="row">
+        <nav class="col-md-2 d-none d-md-block sidebar p-4">
+    <h5 class="fw-bold text-uppercase mb-4">Miel-api Admin</h5>
+    <ul class="nav flex-column">
+        <li class="nav-item mb-2">
+            <a href="./admin.html" class="nav-link active link-dark fw-bold">Gestión Usuarios</a>
+        </li>
+        <li class="nav-item mb-2">
+            <a href="./inventarios.html" class="nav-link link-secondary">Inventarios</a>
+        </li>
+        <hr>
+        <li class="nav-item mb-2">
+            <a href="./productos.html" class="nav-link link-secondary">Ver Catálogo</a>
+        </li>
+        <li class="nav-item mb-2">
+            <a href="./carrito.html" class="nav-link link-secondary">Ver Carrito</a>
+        </li>
+        <li class="nav-item mb-2">
+            <a href="./index.html" class="nav-link link-danger mt-4">Cerrar Sesión</a>
+        </li>
+    </ul>
+</nav>
+
+        <main class="col-md-10 p-5">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="fw-bold">Gestión de Usuarios y Perfiles</h2>
+                <button class="btn btn-dark" onclick="prepararNuevoUsuario()">
+                    + Nuevo Administrador
+                </button>
+            </div>
+
+            <div class="table-container p-4">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombres y Apellidos</th>
+                            <th>Correo Electrónico</th>
+                            <th>Rol / Perfil</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabla-usuarios">
+                        </tbody>
+                </table>
+            </div>
+        </main>
+    </div> </div> <div class="modal fade" id="modalUsuario" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-dark text-white">
+                <h5 class="modal-title fw-bold" id="modalTituloUser">👤 Gestión de Usuario</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="formUsuario">
+                <input type="hidden" id="user-id">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Nombres</label>
+                        <input type="text" id="nombres" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Apellidos</label>
+                        <input type="text" id="apellidos" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Correo Electrónico</label>
+                        <input type="email" id="correo" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Rol del Sistema</label>
+                        <select id="id_rol" class="form-select" required></select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-dark">Guardar Cambios</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    let editandoUser = false;
+
+    async function cargarRoles() {
+        try {
+            const res = await fetch('http://localhost:3000/api/roles');
+            const roles = await res.json();
+            const select = document.getElementById('id_rol');
+            select.innerHTML = '<option value="" selected disabled>Seleccione un rol...</option>';
+            roles.forEach(rol => {
+                select.innerHTML += `<option value="${rol.id_rol}">${rol.nombre_rol}</option>`;
+            });
+        } catch (err) { console.error("Error cargando roles", err); }
+    }
+
+    function prepararNuevoUsuario() {
+        editandoUser = false;
+        document.getElementById('formUsuario').reset();
+        document.getElementById('modalTituloUser').innerText = "👤 Nuevo Administrador";
+        cargarRoles();
+        new bootstrap.Modal(document.getElementById('modalUsuario')).show();
+    }
+
+    // --- FUNCIÓN PARA CARGAR DATOS EN EL MODAL PARA EDITAR ---
+    async function editarUsuario(id) {
+        editandoUser = true;
+        document.getElementById('modalTituloUser').innerText = "🔄 Editar Administrador";
+        await cargarRoles(); // Cargamos roles primero
+        
+        // Buscamos los datos del usuario actual (puedes pedirlos a la API o sacarlos de la fila)
+        try {
+            const res = await fetch('http://localhost:3000/api/usuarios');
+            const usuarios = await res.json();
+            const user = usuarios.find(u => u.id_administrador === id);
+
+            document.getElementById('user-id').value = user.id_administrador;
+            document.getElementById('nombres').value = user.nombres;
+            document.getElementById('apellidos').value = user.apellidos;
+            document.getElementById('correo').value = user.correo;
+            // Para el select de rol, necesitamos encontrar el ID del rol por su nombre
+            // (Opcional: puedes modificar tu API de usuarios para que ya traiga el id_rol)
+            new bootstrap.Modal(document.getElementById('modalUsuario')).show();
+        } catch (err) { console.error(err); }
+    }
+
+    // --- FUNCIÓN PARA GUARDAR O ACTUALIZAR ---
+    document.getElementById('formUsuario').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const id = document.getElementById('user-id').value;
+        const datos = {
+            nombres: document.getElementById('nombres').value,
+            apellidos: document.getElementById('apellidos').value,
+            correo: document.getElementById('correo').value,
+            id_rol: document.getElementById('id_rol').value
+        };
+
+        const url = editandoUser ? `http://localhost:3000/api/usuarios/${id}` : 'http://localhost:3000/api/usuarios';
+        const metodo = editandoUser ? 'PUT' : 'POST';
+
+        try {
+            const res = await fetch(url, {
+                method: metodo,
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(datos)
+            });
+            if (res.ok) {
+                alert(editandoUser ? "Usuario actualizado" : "Usuario creado");
+                location.reload(); // Recarga para ver cambios
+            }
+        } catch (err) { alert("Error al guardar"); }
+    });
+
+    async function cargarUsuarios() {
+        try {
+            const respuesta = await fetch('http://localhost:3000/api/usuarios');
+            const usuarios = await respuesta.json();
+            const tabla = document.getElementById('tabla-usuarios');
+            tabla.innerHTML = "";
+            usuarios.forEach(user => {
+                const claseRol = user.nombre_rol === 'Administrador' ? 'bg-admin' : 'bg-info text-dark';
+                tabla.innerHTML += `
+                    <tr>
+                        <td>${user.id_administrador}</td>
+                        <td class="fw-bold">${user.nombres} ${user.apellidos}</td>
+                        <td>${user.correo}</td>
+                        <td><span class="rol-badge ${claseRol}">${user.nombre_rol}</span></td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-primary" onclick="editarUsuario(${user.id_administrador})">Editar</button>
+                            <button class="btn btn-sm btn-outline-danger" onclick="eliminarUsuario(${user.id_administrador})">Eliminar</button>
+                        </td>
+                    </tr>`;
+            });
+        } catch (error) { console.error("Error:", error); }
+    }
+
+    async function eliminarUsuario(id) {
+        if (confirm(`¿Estás seguro de eliminar al usuario con ID ${id}?`)) {
+            try {
+                const res = await fetch(`http://localhost:3000/api/usuarios/${id}`, { method: 'DELETE' });
+                if (res.ok) {
+                    alert("Usuario eliminado");
+                    cargarUsuarios();
+                }
+            } catch (err) { alert("Error de red"); }
+        }
+    }
+
+    window.onload = cargarUsuarios;
+</script>
+
+</body>
+</html>

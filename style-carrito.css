@@ -1,0 +1,66 @@
+/* Estilo para las pestañas de navegación */
+.nav-tabs .nav-link {
+    color: #6c757d;
+    background: transparent;
+    border: none;
+    font-size: 1.1rem;
+    padding-bottom: 15px;
+}
+
+.nav-tabs .nav-link.active {
+    background: transparent !important;
+    border-bottom: 3px solid #333 !important;
+    color: #000 !important;
+}
+
+/* Contenedor de cantidad similar al de tu diseño */
+.quantity-control {
+    background-color: #fff;
+    min-width: 140px;
+    height: 40px;
+}
+
+.quantity-control span {
+    font-size: 0.9rem;
+    color: #444;
+}
+
+.quantity-control .btn {
+    font-size: 0.6rem;
+    padding: 0 5px;
+    background: transparent;
+}
+
+.quantity-control .btn:hover {
+    background: #f8f9fa;
+}
+
+/* Ajuste de imágenes para que no se deformen */
+.object-fit-contain {
+    object-fit: contain;
+}
+
+/* Botones con el estilo de tu mockup */
+.btn-dark {
+    background-color: #444;
+    border: none;
+    border-radius: 4px;
+}
+
+.btn-light {
+    background-color: #e9ecef;
+    color: #333;
+    border: none;
+    border-radius: 4px;
+}
+
+/* Resumen del total */
+.resumen-container {
+    color: #555;
+    font-size: 0.95rem;
+}
+
+.resumen-container hr {
+    border-top: 1px solid #ccc;
+    opacity: 1;
+}
