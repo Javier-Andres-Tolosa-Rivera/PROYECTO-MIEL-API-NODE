@@ -42,7 +42,7 @@
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h2 class="fw-bold">Gestión de Usuarios y Perfiles</h2>
                 <button class="btn btn-dark" onclick="prepararNuevoUsuario()">
-                    + Nuevo Administrador
+                    + Crear Nuevo Perfil
                 </button>
             </div>
 
@@ -116,61 +116,76 @@
     }
 
     function prepararNuevoUsuario() {
-        editandoUser = false;
-        document.getElementById('formUsuario').reset();
-        document.getElementById('modalTituloUser').innerText = "👤 Nuevo Administrador";
-        cargarRoles();
-        new bootstrap.Modal(document.getElementById('modalUsuario')).show();
+    editandoUser = false;
+    document.getElementById('user-id').value = ""; 
+    document.getElementById('formUsuario').reset();
+    document.getElementById('modalTituloUser').innerText = "👤 Crear Nuevo Perfil";
+    cargarRoles();
+    new bootstrap.Modal(document.getElementById('modalUsuario')).show();
     }
 
     // --- FUNCIÓN PARA CARGAR DATOS EN EL MODAL PARA EDITAR ---
     async function editarUsuario(id) {
-        editandoUser = true;
-        document.getElementById('modalTituloUser').innerText = "🔄 Editar Administrador";
-        await cargarRoles(); // Cargamos roles primero
-        
-        // Buscamos los datos del usuario actual (puedes pedirlos a la API o sacarlos de la fila)
-        try {
-            const res = await fetch('http://localhost:3000/api/usuarios');
-            const usuarios = await res.json();
-            const user = usuarios.find(u => u.id_administrador === id);
+    editandoUser = true;
+    document.getElementById('modalTituloUser').innerText = "🔄 Editar Administrador";
+    await cargarRoles(); 
+    
+    try {
+        const res = await fetch('http://localhost:3000/api/usuarios');
+        const usuarios = await res.json();
+        const user = usuarios.find(u => u.id_administrador === id);
 
+        if (user) {
             document.getElementById('user-id').value = user.id_administrador;
             document.getElementById('nombres').value = user.nombres;
             document.getElementById('apellidos').value = user.apellidos;
             document.getElementById('correo').value = user.correo;
-            // Para el select de rol, necesitamos encontrar el ID del rol por su nombre
-            // (Opcional: puedes modificar tu API de usuarios para que ya traiga el id_rol)
+            
+            // ESTA LÍNEA HACE LA MAGIA: Selecciona el rol actual
+            document.getElementById('id_rol').value = user.id_rol;
+
             new bootstrap.Modal(document.getElementById('modalUsuario')).show();
-        } catch (err) { console.error(err); }
+        }
+    } catch (err) { console.error("Error al cargar datos para editar", err); }
+}
+
+    // --- FUNCIÓN PARA GUARDAR O ACTUALIZAR (CORREGIDA) ---
+document.getElementById('formUsuario').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const id = document.getElementById('user-id').value;
+    const datos = {
+        nombres: document.getElementById('nombres').value.trim(),
+        apellidos: document.getElementById('apellidos').value.trim(),
+        correo: document.getElementById('correo').value.trim(),
+        id_rol: parseInt(document.getElementById('id_rol').value) // Aseguramos que sea número
+    };
+
+    // Si estamos editando usamos PUT y el ID, si no, POST sin ID
+    const url = editandoUser ? `http://localhost:3000/api/usuarios/${id}` : 'http://localhost:3000/api/usuarios';
+    const metodo = editandoUser ? 'PUT' : 'POST';
+
+    try {
+        const res = await fetch(url, {
+            method: metodo,
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(datos)
+        });
+
+        const resultado = await res.json();
+
+        if (res.ok) {
+            alert(editandoUser ? "✅ Usuario actualizado" : "✅ Usuario creado con éxito");
+            location.reload(); 
+        } else {
+            // Esto nos dirá qué está rechazando el servidor exactamente
+            alert("❌ Error del servidor: " + (resultado.error || "No se pudo crear"));
+        }
+    } catch (err) {
+        console.error("Error completo:", err);
+        alert("❌ Error de conexión con el servidor");
     }
-
-    // --- FUNCIÓN PARA GUARDAR O ACTUALIZAR ---
-    document.getElementById('formUsuario').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const id = document.getElementById('user-id').value;
-        const datos = {
-            nombres: document.getElementById('nombres').value,
-            apellidos: document.getElementById('apellidos').value,
-            correo: document.getElementById('correo').value,
-            id_rol: document.getElementById('id_rol').value
-        };
-
-        const url = editandoUser ? `http://localhost:3000/api/usuarios/${id}` : 'http://localhost:3000/api/usuarios';
-        const metodo = editandoUser ? 'PUT' : 'POST';
-
-        try {
-            const res = await fetch(url, {
-                method: metodo,
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(datos)
-            });
-            if (res.ok) {
-                alert(editandoUser ? "Usuario actualizado" : "Usuario creado");
-                location.reload(); // Recarga para ver cambios
-            }
-        } catch (err) { alert("Error al guardar"); }
-    });
+});
 
     async function cargarUsuarios() {
         try {

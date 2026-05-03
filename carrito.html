@@ -60,285 +60,174 @@
                 <h4 class="fw-bold mb-4">CARRITO</h4>
                 
 
-                <!--ya actualizado-->
-                <div class="d-flex align-items-center py-3 border-bottom product-item" id="item-p1" data-precio="30000">
-                    <div class="border rounded p-1 me-3 bg-white" style="width: 100px; height: 100px;">
-                     <img src="./images/Miel frasco Vidrio.png" class="img-fluid h-100 w-100 object-fit-contain" alt="Miel">
-                    </div>
-
-                    <div class="flex-grow-1">
-                     <h6 class="mb-0 fw-bold text-uppercase">LITRO DE MIEL</h6>
-                     <p class="text-muted small mb-2">Miel de Apis Melífera 100%</p>
-                     <p class="fw-bold">$30.000</p>
-                     </div>
-                       <div class="quantity-control d-flex align-items-center border rounded bg-white">
-                          <span class="px-3 fw-bold" id="cant-p1">0 Producto</span>
-                     <div class="d-flex flex-column border-start">
-                         <button class="btn btn-sm py-0 border-bottom border-0" onclick="actualizarItem('p1', 1)">▲</button>
-                         <button class="btn btn-sm py-0 border-0" onclick="actualizarItem('p1', -1)">▼</button>
-                       </div>
-                        </div>
-                  </div>
-
-                  <!--ya actualizado-->
-                    <div class="d-flex align-items-center py-3 border-bottom product-item" id="item-p2" data-precio="30000">
-                         <div class="border rounded p-1 me-3 bg-white" style="width: 100px; height: 100px;">
-                          <img src="./images/Jalea real.PNG" class="img-fluid h-100 w-100 object-fit-contain" alt="Miel">
-                         </div>
-                         <div class="flex-grow-1">
-                             <h6 class="mb-0 fw-bold text-uppercase">JALEA REAL</h6>
-                             <p class="text-muted small mb-2">Auténtica Jalea Real</p>
-                             <p class="fw-bold">$30.000</p>
-                         </div>
-                        <div class="quantity-control d-flex align-items-center border rounded bg-white">
-                            <span class="px-3 fw-bold" id="cant-p2">0 Producto</span>
-                            <div class="d-flex flex-column border-start">
-                                <button class="btn btn-sm py-0 border-bottom border-0" onclick="actualizarItem('p2', 1)">▲</button>
-                                <button class="btn btn-sm py-0 border-0" onclick="actualizarItem('p2', -1)">▼</button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!--ya actualizado-->
-                <div class="d-flex align-items-center py-3 border-bottom product-item" id="item-p3" data-precio="30000">
-                <div class="border rounded p-1 me-3 bg-white" style="width: 100px; height: 100px;">
-                <img src="./images/propoleo.PNG" class="img-fluid h-100 w-100 object-fit-contain" alt="Miel">
+                <div id="contenedor-carrito-dinamico" class="container py-4">
+                    <!-- Aquí JavaScript insertará los productos automáticamente -->
                 </div>
-                 <div class="flex-grow-1">
-                 <h6 class="mb-0 fw-bold text-uppercase">PROPOLEO</h6>
-                 <p class="text-muted small mb-2">Auténtica Proteina de abejas</p>
-                 <p class="fw-bold">$30.000</p>
-                 </div>
-                 <div class="quantity-control d-flex align-items-center border rounded bg-white">
-                  <span class="px-3 fw-bold" id="cant-p3">0 Producto</span>
-                  <div class="d-flex flex-column border-start">
-                 <button class="btn btn-sm py-0 border-bottom border-0" onclick="actualizarItem('p3', 1)">▲</button>
-                <button class="btn btn-sm py-0 border-0" onclick="actualizarItem('p3', -1)">▼</button>
-                </div>
-                  </div>
-                   </div>
 
-                    <!--ya actualizado-->
-                <div class="d-flex align-items-center py-3 border-bottom product-item" id="item-p4" data-precio="30000">
-                 <div class="border rounded p-1 me-3 bg-white" style="width: 100px; height: 100px;">
-                     <img src="./images/cera.PNG" class="img-fluid h-100 w-100 object-fit-contain" alt="Miel">
-                 </div>
-                 <div class="flex-grow-1">
-                     <h6 class="mb-0 fw-bold text-uppercase">CERA DE ABEJA</h6>
-                     <p class="text-muted small mb-2">Auténtica Cera Fuerte</p>
-                     <p class="fw-bold">$30.000</p>
-                 </div>
-                 <div class="quantity-control d-flex align-items-center border rounded bg-white">
-                     <span class="px-3 fw-bold" id="cant-p4">0 Producto</span>
-                     <div class="d-flex flex-column border-start">
-                         <button class="btn btn-sm py-0 border-bottom border-0" onclick="actualizarItem('p4', 1)">▲</button>
-                         <button class="btn btn-sm py-0 border-0" onclick="actualizarItem('p4', -1)">▼</button>
-                     </div>
-                 </div>
-             </div>
-               
-                  <!--ya actualizado-->
-                <div class="d-flex align-items-center py-3 border-bottom product-item" id="item-p5" data-precio="30000">
-                   <div class="border rounded p-1 me-3 bg-white" style="width: 100px; height: 100px;">
-                       <img src="./images/Gotas-de-miel angelita.png" class="img-fluid h-100 w-100 object-fit-contain" alt="Miel">
-                   </div>
-                   <div class="flex-grow-1">
-                       <h6 class="mb-0 fw-bold text-uppercase">MIEL ANGELITA GOTAS</h6>
-                       <p class="text-muted small mb-2">Cuidado de los ojos de forma natural</p>
-                       <p class="fw-bold">$30.000</p>
-                   </div>
-                   <div class="quantity-control d-flex align-items-center border rounded bg-white">
-                       <span class="px-3 fw-bold" id="cant-p5">0 Producto</span>
-                       <div class="d-flex flex-column border-start">
-                           <button class="btn btn-sm py-0 border-bottom border-0" onclick="actualizarItem('p5', 1)">▲</button>
-                           <button class="btn btn-sm py-0 border-0" onclick="actualizarItem('p5', -1)">▼</button>
-                       </div>
-                   </div>
-               </div>
+                <!-- En la parte inferior de tu carrito.html -->
+        <div class="row mt-4 pt-3 border-top">
+          <div class="col-12 d-flex flex-wrap gap-2 justify-content-between">
+        <div>
+            <a href="productos.html" class="btn btn-outline-dark text-uppercase fw-bold">
+                <i class="bi bi-arrow-left me-2"></i>Seguir Comprando
+            </a>
+        </div>
 
-                <!--ya actualizado-->
-                <div class="d-flex align-items-center py-3 border-bottom product-item" id="item-p6" data-precio="100000">
-                  <div class="border rounded p-1 me-3 bg-white" style="width: 100px; height: 100px;">
-                      <img src="./images/abeja reina.jpg" class="img-fluid h-100 w-100 object-fit-contain" alt="Miel">
-                  </div>
-                  <div class="flex-grow-1">
-                      <h6 class="mb-0 fw-bold text-uppercase">ABEJA REINA</h6>
-                      <p class="text-muted small mb-2">La Mama de las abejas</p>
-                      <p class="fw-bold">$100.000</p>
-                  </div>
-                  <div class="quantity-control d-flex align-items-center border rounded bg-white">
-                      <span class="px-3 fw-bold" id="cant-p6">0 Producto</span>
-                      <div class="d-flex flex-column border-start">
-                          <button class="btn btn-sm py-0 border-bottom border-0" onclick="actualizarItem('p6', 1)">▲</button>
-                          <button class="btn btn-sm py-0 border-0" onclick="actualizarItem('p6', -1)">▼</button>
-                      </div>
-                  </div>
-              </div>
 
-                 <!--ya actualizado-->
-                <div class="d-flex align-items-center py-3 border-bottom product-item" id="item-p7" data-precio="30000">
-                  <div class="border rounded p-1 me-3 bg-white" style="width: 100px; height: 100px;">
-                      <img src="./images/polen.PNG" class="img-fluid h-100 w-100 object-fit-contain" alt="Miel">
-                  </div>
-                  <div class="flex-grow-1">
-                      <h6 class="mb-0 fw-bold text-uppercase">POLEN</h6>
-                      <p class="text-muted small mb-2">Carbohidratos y Proteina Natural</p>
-                      <p class="fw-bold">$30.000</p>
-                  </div>
-                  <div class="quantity-control d-flex align-items-center border rounded bg-white">
-                      <span class="px-3 fw-bold" id="cant-p7">0 Producto</span>
-                      <div class="d-flex flex-column border-start">
-                          <button class="btn btn-sm py-0 border-bottom border-0" onclick="actualizarItem('p7', 1)">▲</button>
-                          <button class="btn btn-sm py-0 border-0" onclick="actualizarItem('p7', -1)">▼</button>
-                      </div>
-                  </div>
-              </div>
-
-                 <!--ya actualizado-->
-                <div class="d-flex align-items-center py-3 border-bottom product-item" id="item-p8" data-precio="20000">
-                <div class="border rounded p-1 me-3 bg-white" style="width: 100px; height: 100px;">
-                    <img src="./images/Apitoxina2 gel.webp" class="img-fluid h-100 w-100 object-fit-contain" alt="Miel">
-                </div>
-                <div class="flex-grow-1">
-                    <h6 class="mb-0 fw-bold text-uppercase">APITOXINA GEL</h6>
-                    <p class="text-muted small mb-2">Aplicacion Topica. Antiinflamatoria, analgésica y estimulante de la circulación</p>
-                    <p class="fw-bold">$20.000</p>
-                </div>
-                <div class="quantity-control d-flex align-items-center border rounded bg-white">
-                    <span class="px-3 fw-bold" id="cant-p8">0 Producto</span>
-                    <div class="d-flex flex-column border-start">
-            <button class="btn btn-sm py-0 border-bottom border-0" onclick="actualizarItem('p8', 1)">▲</button>
-            <button class="btn btn-sm py-0 border-0" onclick="actualizarItem('p8', -1)">▼</button>
-                    </div>
-                </div>
-            </div>
-
-                 <!--ya actualizado-->
-                <div class="d-flex align-items-center py-3 border-bottom product-item" id="item-p9" data-precio="6000">
-                 <div class="border rounded p-1 me-3 bg-white" style="width: 100px; height: 100px;">
-                     <img src="./images/jabon miel.png" class="img-fluid h-100 w-100 object-fit-contain" alt="Miel">
-                 </div>
-                 <div class="flex-grow-1">
-                     <h6 class="mb-0 fw-bold text-uppercase">JABON API-REAL</h6>
-                     <p class="text-muted small mb-2">Jabon de baño para el cuerpo</p>
-                     <p class="fw-bold">$6.000</p>
-                 </div>
-                 <div class="quantity-control d-flex align-items-center border rounded bg-white">
-                     <span class="px-3 fw-bold" id="cant-p9">0 Producto</span>
-                     <div class="d-flex flex-column border-start">
-                         <button class="btn btn-sm py-0 border-bottom border-0" onclick="actualizarItem('p9', 1)">▲</button>
-                         <button class="btn btn-sm py-0 border-0" onclick="actualizarItem('p9', -1)">▼</button>
-                     </div>
-                 </div>
-             </div>
-
-                <div class="mt-5 d-flex gap-3 flex-wrap">
-                 <a href="./pagos.html" id="btn-pagar" class="btn btn-dark px-5">PAGAR</a>
-                 <a href="./productos.html" class="btn btn-light border px-5 py-2">CANCELAR</a>
-                <button onclick="vaciarCarrito()" class="btn btn-outline-danger px-4">VACIAR CARRITO</button>
-                </div>
+        <div class="d-flex gap-2">
+            <button onclick="vaciarCarrito()" class="btn btn-danger text-uppercase fw-bold">Vaciar Carrito</button>
+            <a href="productos.html" class="btn btn-secondary text-uppercase fw-bold">Cancelar</a>
+            <button onclick="procesarPago()" class="btn btn-dark text-uppercase fw-bold px-4">Pagar</button>
+        </div>
+        </div>
+        </div>
 
             </div>
 
             <div class="col-md-4">
     <h4 class="fw-bold mb-4 text-uppercase">Resumen de Compra</h4>
     <div class="resumen-container p-3 bg-white border rounded">
-        <div id="lista-resumen">
+
+        <!-- Le ponemos el ID 'detalle-resumen' que es el que usa tu función renderizarCarrito -->
+        <div id="detalle-resumen" class="resumen-container">
             <p class="text-muted small">No hay productos seleccionados</p>
-        </div>
-        <hr>             
+            <hr>
         <div class="d-flex justify-content-between align-items-center mt-3">
-            <h4 class="fw-bold text-muted">TOTAL</h4>
-            <h4 class="fw-bold" id="granTotal">$0</h4>
+        <h4 class="fw-bold text-muted">TOTAL</h4>
+        <h4 class="fw-bold">$0</h4>
         </div>
-    </div>
-</div>
+            </div>
+
+        </div>
+        </div>
 
         </div>
     </main>
 
     <script>
-// Objeto global para guardar el carrito
-let carrito = JSON.parse(localStorage.getItem('miel_carrito')) || {};
+    // Tu función renderizarCarrito está bien, solo asegúrate de llamarla al cargar
+    document.addEventListener('DOMContentLoaded', () => {
+        renderizarCarrito();
+    });
 
-function actualizarItem(id, cambio) {
-    // 1. Inicializar si el producto no existe en el objeto carrito
-    if (!carrito[id]) carrito[id] = 0;
+    function renderizarCarrito() {
+        const contenedor = document.getElementById('contenedor-carrito-dinamico');
+        const resumenDiv = document.getElementById('detalle-resumen'); // ID CORREGIDO
+        const carrito = JSON.parse(localStorage.getItem('carritoMielAPI')) || [];
+        
+        if (carrito.length === 0) {
+            contenedor.innerHTML = `
+                <div class="text-center py-5">
+                    <h3 class="mt-3 text-uppercase fw-bold">Tu carrito está vacío</h3>
+                    <a href="productos.html" class="btn btn-dark btn-lg mt-3 rounded-pill">IR AL CATÁLOGO</a>
+                </div>`;
+            if(resumenDiv) resumenDiv.innerHTML = "<p class='text-muted'>No hay productos</p><hr><h4>TOTAL: $0</h4>";
+            actualizarContadorCarrito();
+            return;
+        }
 
-    // 2. Cambiar cantidad
-    carrito[id] += cambio;
-    if (carrito[id] < 0) carrito[id] = 0;
+        let htmlFull = "";
+        let granTotal = 0;
 
-    // 3. Guardar en LocalStorage para que no se borre al refrescar
-    localStorage.setItem('miel_carrito', JSON.stringify(carrito));
+        carrito.forEach((item, index) => {
+            const subtotal = item.precio * item.cantidad_seleccionada;
+            granTotal += subtotal;
+            htmlFull += `
+                <div class="row align-items-center border-bottom py-3">
+                    <div class="col-3 col-md-2 text-center">
+                        <img src="img/${item.id_producto}.png" class="img-carrito" onerror="this.src='img/${item.id_producto}.jpg'">
+                    </div>
+                    <div class="col-9 col-md-4">
+                        <h6 class="fw-bold mb-0 text-uppercase">${item.nombre}</h6>
+                        <small class="text-muted">${item.peso || 'Unidad'}</small>
+                        <p class="mb-0 text-primary fw-bold">$ ${item.precio.toLocaleString('es-CO')}</p>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div class="input-group input-group-sm" style="max-width: 120px;">
+                            <button class="btn btn-outline-dark" onclick="cambiarCantidad(${index}, -1)">-</button>
+                            <input type="text" class="form-control text-center" value="${item.cantidad_seleccionada}" readonly>
+                            <button class="btn btn-outline-dark" onclick="cambiarCantidad(${index}, 1)">+</button>
+                        </div>
+                    </div>
+                    <div class="col-4 col-md-2 text-end">
+                        <span class="fw-bold">$ ${subtotal.toLocaleString('es-CO')}</span>
+                    </div>
+                    <div class="col-2 col-md-1 text-end">
+                        <button class="btn btn-sm text-danger" onclick="eliminarDelCarrito(${index})">Eliminar</button>
+                    </div>
+                </div>`;
+        });
 
-    // 4. Actualizar la interfaz
-    renderizarInterfaz();
-}
+        contenedor.innerHTML = htmlFull;
 
-function renderizarInterfaz() {
-    let totalGeneral = 0;
-    const listaResumen = document.getElementById('lista-resumen');
-    const btnPagar = document.getElementById('btn-pagar');
-    
-    // Limpiar resumen de la derecha
-    listaResumen.innerHTML = "";
-    let hayProductos = false;
-
-    // Recorrer todos los elementos con clase product-item
-    document.querySelectorAll('.product-item').forEach(item => {
-        const id = item.id.replace('item-', '');
-        const precio = parseInt(item.getAttribute('data-precio'));
-        const nombre = item.querySelector('h6').innerText;
-        const cantidad = carrito[id] || 0;
-
-        // Actualizar el contador en el centro de la página
-        const elCant = document.getElementById('cant-' + id);
-        elCant.innerText = cantidad + (cantidad === 1 ? " Producto" : " Productos");
-
-        // Manejar el color de la imagen
-        if (cantidad === 0) {
-            item.classList.add('item-desactivado');
-        } else {
-            item.classList.remove('item-desactivado');
-            
-            // Si hay cantidad, añadir al resumen de la derecha
-            hayProductos = true;
-            const subtotal = precio * cantidad;
-            totalGeneral += subtotal;
-
-            listaResumen.innerHTML += `
-                <div class="d-flex justify-content-between mb-2 small">
-                    <span>${nombre} (x${cantidad})</span>
-                    <span>$${subtotal.toLocaleString('es-CO')}</span>
+        // Actualizar el Resumen a la derecha
+        if(resumenDiv) {
+            resumenDiv.innerHTML = `
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Productos (${carrito.length}):</span>
+                    <span>$ ${granTotal.toLocaleString('es-CO')}</span>
+                </div>
+                <div class="d-flex justify-content-between mb-3">
+                    <span>Envío:</span>
+                    <span class="text-success">Gratis</span>
+                </div>
+                <hr>
+                <div class="d-flex justify-content-between">
+                    <h4 class="fw-bold">TOTAL</h4>
+                    <h4 class="fw-bold text-primary">$ ${granTotal.toLocaleString('es-CO')}</h4>
                 </div>
             `;
         }
-    });
-
-    // Si no hay nada, mostrar mensaje
-    if (!hayProductos) {
-        listaResumen.innerHTML = '<p class="text-muted small">No hay productos seleccionados</p>';
-        btnPagar.classList.add('btn-disabled');
-    } else {
-        btnPagar.classList.remove('btn-disabled');
+        actualizarContadorCarrito();
     }
 
-    // Actualizar Gran Total
-    document.getElementById('granTotal').innerText = '$' + totalGeneral.toLocaleString('es-CO');
-}
+    // --- FUNCIONES DE LÓGICA QUE FALTABAN ---
 
-// AL CARGAR LA PÁGINA
-window.onload = function() {
-    renderizarInterfaz();
-};
+    function cambiarCantidad(index, cambio) {
+        let carrito = JSON.parse(localStorage.getItem('carritoMielAPI')) || [];
+        let nuevaCantidad = carrito[index].cantidad_seleccionada + cambio;
 
-function vaciarCarrito() {
-    if (confirm("¿Estás seguro de que deseas vaciar todo el carrito?")) {
-        localStorage.removeItem('miel_carrito');
-        carrito = {};
-        renderizarInterfaz();
+        if (nuevaCantidad > 0) { // No permitir menos de 1
+            carrito[index].cantidad_seleccionada = nuevaCantidad;
+            localStorage.setItem('carritoMielAPI', JSON.stringify(carrito));
+            renderizarCarrito();
+        }
     }
+
+    function eliminarDelCarrito(index) {
+        let carrito = JSON.parse(localStorage.getItem('carritoMielAPI')) || [];
+        carrito.splice(index, 1);
+        localStorage.setItem('carritoMielAPI', JSON.stringify(carrito));
+        renderizarCarrito();
+    }
+
+    function vaciarCarrito() {
+        if (confirm("¿Deseas vaciar todo el carrito?")) {
+            localStorage.removeItem('carritoMielAPI');
+            renderizarCarrito();
+        }
+    }
+
+    function actualizarContadorCarrito() {
+        const carrito = JSON.parse(localStorage.getItem('carritoMielAPI')) || [];
+        const totalItems = carrito.reduce((sum, item) => sum + item.cantidad_seleccionada, 0);
+        // Aquí podrías actualizar un badge en el header si lo tienes
+    }
+
+    function procesarPago() {
+    // 1. Obtenemos el carrito actual
+    const carrito = JSON.parse(localStorage.getItem('carritoMielAPI')) || [];
+
+    // 2. Verificamos si hay productos
+    if (carrito.length === 0) {
+        alert("Tu carrito está vacío. Agrega productos antes de proceder al pago.");
+        return; // Detenemos la ejecución aquí
+    }
+
+    // 3. Si hay productos, redirigimos a pagos.html
+    // Nota: El carrito sigue guardado en localStorage, así que pagos.html 
+    // podrá leerlo para mostrar el total final allí también.
+    window.location.href = "pagos.html";
 }
 </script>
 

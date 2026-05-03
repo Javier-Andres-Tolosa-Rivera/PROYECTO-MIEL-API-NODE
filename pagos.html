@@ -117,74 +117,54 @@
     </main>
 
     <script>
-    // 1. Base de datos de precios (debe coincidir con la de carrito.html)
-    // Cuando pasemos a MIEL_API3, esto vendrá de la BD.
-    const PRECIOS_PRODUCTOS = {
-        'p1': 30000, // Litro de Miel
-        'p2': 30000, // Jalea Real (según tu imagen, ambos están a 30k)
-        'p3': 30000,
-        'p4': 30000,
-        'p5': 30000,
-        'p6': 100000, // Abeja Reina
-        'p7': 30000,
-        'p8': 20000,  // Apitoxina
-        'p9': 6000    // Jabón
-    };
-
-    // 2. Nombres de productos para el resumen
-    const NOMBRES_PRODUCTOS = {
-        'p1': 'MIEL LITRO',
-        'p2': 'JALEA REAL',
-        'p3': 'PROPOLEO',
-        'p4': 'CERA DE ABEJA',
-        'p5': 'MIEL ANGELITA',
-        'p6': 'ABEJA REINA',
-        'p7': 'POLEN',
-        'p8': 'APITOXINA GEL',
-        'p9': 'JABON API-REAL'
-    };
-
     function sincronizarPago() {
-    const carritoRaw = localStorage.getItem('miel_carrito');
-    const listaProductosContenedor = document.getElementById('lista-productos-pago');
-    const granTotalPagoElement = document.getElementById('granTotalPago');
+        // 1. Usamos el mismo nombre de variable que en carrito.html
+        const carritoRaw = localStorage.getItem('carritoMielAPI');
+        const listaProductosContenedor = document.getElementById('lista-productos-pago');
+        const granTotalPagoElement = document.getElementById('granTotalPago');
 
-    if (!carritoRaw || carritoRaw === '{}') {
-        listaProductosContenedor.innerHTML = '<p class="text-muted small">No hay productos seleccionados</p>';
-        return;
-    }
+        // Si el carrito no existe o está vacío
+        if (!carritoRaw || carritoRaw === '[]') {
+            listaProductosContenedor.innerHTML = '<p class="text-muted small">No hay productos seleccionados</p>';
+            granTotalPagoElement.innerText = '$0';
+            return;
+        }
 
-    const carrito = JSON.parse(carritoRaw);
-    let totalGeneral = 0;
-    let htmlFinal = "";
+        const carrito = JSON.parse(carritoRaw);
+        let totalGeneral = 0;
+        let htmlFinal = "";
 
-    for (const id in carrito) {
-        const cantidad = carrito[id];
-        
-        if (cantidad > 0) {
-            const precioUnitario = PRECIOS_PRODUCTOS[id] || 0;
-            const nombreProducto = NOMBRES_PRODUCTOS[id] || "Producto";
-            const subtotal = precioUnitario * cantidad;
+        // Como ahora el carrito tiene objetos completos, no necesitamos PRECIOS_PRODUCTOS manuales
+        carrito.forEach((item) => {
+            const subtotal = item.precio * item.cantidad_seleccionada;
             totalGeneral += subtotal;
 
-            // Generamos una sola línea por producto, con negrita y formato limpio
             htmlFinal += `
-                <div class="d-flex justify-content-between mb-2">
-                    <span class="fw-bold text-uppercase small">${nombreProducto} (x${cantidad})</span>
-                    <span class="fw-bold small">$${subtotal.toLocaleString('es-CO')}</span>
+                <div class="d-flex justify-content-between mb-2 border-bottom pb-1">
+                    <span class="fw-bold text-uppercase small" style="max-width: 70%;">
+                        ${item.nombre} (x${item.cantidad_seleccionada})
+                    </span>
+                    <span class="fw-bold small text-primary">$${subtotal.toLocaleString('es-CO')}</span>
                 </div>
             `;
-        }
+        });
+
+        // Insertar los productos y el total
+        listaProductosContenedor.innerHTML = htmlFinal;
+        granTotalPagoElement.innerText = '$ ' + totalGeneral.toLocaleString('es-CO');
     }
 
-    // Insertar el contenido una sola vez
-    listaProductosContenedor.innerHTML = htmlFinal;
-    
-    // Actualizar el Gran Total
-    granTotalPagoElement.innerText = '$' + totalGeneral.toLocaleString('es-CO');
-}
+    // Función para el botón "Pagar Ahora"
+    document.querySelector('.btn-dark.px-5').addEventListener('click', function() {
+        const metodo = document.querySelector('input[name="payMethod"]:checked').id;
+        alert("Procesando pago con " + metodo.toUpperCase() + ". ¡Gracias por tu compra!");
+        
+        // Opcional: Limpiar carrito tras la compra exitosa
+        // localStorage.removeItem('carritoMielAPI');
+        // window.location.href = "confirmacion.html";
+    });
 
-    // Ejecutar la sincronización al cargar la página de pagos
+    // Ejecutar al cargar la página
     window.onload = sincronizarPago;
 </script>
 

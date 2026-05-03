@@ -3,196 +3,232 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Miel-api | Catálogo de Productos</title>
+    <title>Miel-api | Catálogo</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
-    <link rel="stylesheet" href="style-catalogo.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <style>
+        /* Header y Navegación */
+        .header-top { border-bottom: 1px solid #eee; padding: 10px 0; }
+        .search-bar { border-radius: 20px; background: #f8f9fa; border: 1px solid #ddd; padding: 5px 20px; width: 100%; max-width: 500px; }
+        .nav-main { padding: 10px 0; font-weight: bold; }
+        .nav-main a { text-decoration: none; color: #333; margin-right: 25px; transition: 0.3s; }
+        .nav-main a:hover { color: #ffc107; }
+        
+        /* Enlaces de acciones de usuario */
+        .user-action-link { text-decoration: none; color: #333; font-weight: bold; font-size: 0.85rem; transition: 0.3s; }
+        .user-action-link:hover { color: #ffc107; }
+
+        /* Estilo de Tarjetas */
+        .card-producto { border: 1px solid #eee; border-radius: 8px; transition: all 0.3s; overflow: hidden; }
+        .card-producto:hover { box-shadow: 0 10px 20px rgba(0,0,0,0.08); transform: translateY(-3px); }
+        .img-container { height: 250px; background: #fffcf0; display: flex; align-items: center; justify-content: center; position: relative; }
+        
+        /* Imagen del producto */
+        .img-producto-file { max-height: 100%; max-width: 100%; object-fit: contain; }
+        
+        .badge-peso { position: absolute; bottom: 10px; left: 10px; background: #ffc107; color: black; font-weight: bold; padding: 2px 8px; border-radius: 4px; font-size: 0.8rem; }
+        .stock-text { font-size: 0.8rem; color: #888; }
+        .precio-texto { color: #198754; font-size: 1.25rem; font-weight: bold; }
+        .btn-carrito { border: 1px solid #333; background: white; color: #333; transition: 0.3s; font-weight: bold; }
+        .btn-carrito:hover { background: #333; color: white; }
+    </style>
 </head>
 <body>
 
-    <header class="bg-white py-3 border-bottom">
-    <div class="container-fluid px-4">
-        <div class="d-flex align-items-center justify-content-between flex-nowrap">
-            
-            <div class="me-3">
-                <img src="./images/Logo Miel-API - pequeño.png" alt="Miel-api" height="45" class="d-inline-block">
+<header class="container-fluid bg-white sticky-top shadow-sm">
+    <div class="container header-top d-flex justify-content-between align-items-center">
+        <div class="logo">
+            <a href="./index.html">
+                <img src="./images/Logo Miel-API - pequeño.png" alt="Miel-api" height="50">
+            </a>
+        </div>
+        <div class="search-container d-none d-md-block flex-grow-1 mx-5">
+            <div class="search-bar d-flex align-items-center">
+                <i class="bi bi-search me-2"></i>
+                <input type="text" class="form-control border-0 bg-transparent" placeholder="BUSCAR PRODUCTOS...">
             </div>
-
-            <div class="flex-grow-1 mx-4" style="max-width: 600px;">
-                <div class="input-group">
-                    <span class="input-group-text bg-white border-end-0 rounded-start-pill">
-                        <i class="bi bi-search"></i>
-                    </span>
-                    <input type="text" class="form-control border-start-0 rounded-end-pill" placeholder="BUSCAR">
-                </div>
-            </div>
-
-            <div class="d-flex align-items-center flex-nowrap text-nowrap">
-                <a href="registro.html" class="text-dark text-decoration-none small fw-bold me-4">
-                    <i class="bi bi-person me-1"></i> INICIAR SESION / REGISTRAR
-                </a>
-                
-                <a href="carrito.html" class="text-dark text-decoration-none small fw-bold d-flex align-items-center">CARRITO DE COMPRAS<div class="position-relative ms-2">
-                        <i class="bi bi-cart3 fs-4"></i>
-                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-dark" style="font-size: 0.6rem;">
-                            2
-                        </span>
-                    </div>
-                </a>
-            </div>
-
+        </div>
+        <div class="user-actions d-flex align-items-center gap-4">
+            <a href="./registro.html" class="user-action-link">
+                <i class="bi bi-person me-1"></i> INICIAR SESIÓN / REGISTRAR
+            </a>
+            <a href="./carrito.html" class="user-action-link position-relative">
+                CARRITO DE COMPRAS <i class="bi bi-cart3 fs-5"></i>
+                <span id="cart-count" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-dark">0</span>
+            </a>
         </div>
     </div>
+    <nav class="container nav-main">
+        <a href="./index.html">INICIO</a>
+        <a href="./servicios.html">SERVICIOS</a>
+    </nav>
 </header>
 
-    <nav class="sub-nav py-3 border-bottom bg-white">
-        <div class="container">
-            <ul class="nav justify-content-start">
-                <li class="nav-item"><a class="nav-link text-dark active px-0 me-4 fw-bold" href="./index.html">INICIO</a></li>
-                <li class="nav-item"><a class="nav-link text-dark px-0 me-4 fw-bold" href="./servicios.html">SERVICIOS</a></li>
-            </ul>
+<main class="container my-5">
+    <div class="text-center mb-5">
+        <h2 class="fw-light text-uppercase">CATALOGO DE PRODUCTOS APICOLAS</h2>
+        <div class="mx-auto" style="width: 100px; height: 3px; background: #ffc107;"></div>
+    </div>
+
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4" id="contenedor-productos">
         </div>
-    </nav>
+</main>
 
-    <main class="container py-4">
-    <h2 class="text-center text-secondary mb-5 fw-normal">CATALOGO DE PRODUCTOS APICOLAS</h2>
+<script>
+    // 1. Variable global para guardar los productos y permitir el filtrado
+    let productosCatalogo = [];
 
-    <div class="row g-4">
-        <div class="col-md-3">
-            <div class="card h-100 border-primary-subtle border-2">
-                <div class="card-body p-4 text-center">
-                    <img src="./images/Miel frasco Vidrio.png" class="img-fluid mb-4" alt="Miel">
-                </div>
-                <div class="card-footer bg-transparent border-0 p-3">
-                    <p class="mb-0 text-uppercase small text-muted">MIEL DE ABEJA - 1 LITRO</p>
-                    <p class="fw-bold mb-0">$30.000</p>
-                </div>
-            </div>
-        </div>
+    // 2. Función para cargar los productos desde la API
+    async function cargarCatalogo() {
+        try {
+            const res = await fetch('http://localhost:3000/api/productos');
+            productosCatalogo = await res.json();
+            renderizarTarjetas(productosCatalogo);
+        } catch (err) {
+            console.error("Error al cargar productos:", err);
+            document.getElementById('contenedor-productos').innerHTML = 
+                `<div class="col-12 text-center text-danger">Error al conectar con la base de datos</div>`;
+        }
+    }
 
-        <div class="col-md-9">
-            <div class="row row-cols-1 row-cols-md-4 g-3">
-                
+    // 3. Función para dibujar las tarjetas (Separada para poder filtrar)
+    function renderizarTarjetas(lista) {
+        const contenedor = document.getElementById('contenedor-productos');
+        contenedor.innerHTML = "";
+
+        lista.forEach(p => {
+            const precioFormateado = new Intl.NumberFormat('es-CO', {
+                style: 'currency',
+                currency: 'COP',
+                minimumFractionDigits: 0
+            }).format(p.precio_unidad);
+
+            // Lógica de imagen: busca .png, si falla busca .jpg
+            const rutaImagen = `img/${p.id_producto}.png`; 
+            
+            // Validación de stock para el botón
+            const estaAgotado = p.cantidad_unidad <= 0;
+
+            contenedor.innerHTML += `
                 <div class="col">
-                    <div class="product-card-small border rounded p-2 h-100">
-                        <div class="img-container-small">
-                            <img src="./images/propoleo.PNG" alt="Propoleo">
+                    <div class="card h-100 card-producto ${estaAgotado ? 'opacity-75' : ''}">
+                        <div class="img-container">
+                            <img src="${rutaImagen}" 
+                                 onerror="this.onerror=null; this.src='img/${p.id_producto}.jpg'; this.setAttribute('onfailure', 'placeholder')"
+                                 class="img-producto-file ${estaAgotado ? 'grayscale' : ''}" 
+                                 alt="${p.nombre_producto}">
+                            <span class="badge-peso">${p.peso_producto}</span>
                         </div>
-                        <div class="ps-1 mt-2">
-                            <p class="mb-0 text-uppercase x-small text-muted">PROPOLEO</p>
-                            <p class="fw-bold mb-0">$30.000</p>
+                        <div class="card-body">
+                            <div class="text-end mb-1">
+                                <span class="badge ${estaAgotado ? 'bg-danger' : 'bg-light text-dark border'}">
+                                    ${estaAgotado ? 'Agotado' : 'Stock: ' + p.cantidad_unidad}
+                                </span>
+                            </div>
+                            <h6 class="card-title fw-bold text-uppercase mb-2">${p.nombre_producto}</h6>
+                            <p class="precio-texto mb-0">${precioFormateado}</p>
+                        </div>
+                        <div class="card-footer bg-transparent border-0 pb-3">
+                            <button class="btn btn-carrito w-100 text-uppercase btn-sm" 
+                                    onclick="agregarAlCarrito(${p.id_producto})"
+                                    ${estaAgotado ? 'disabled' : ''}>
+                                ${estaAgotado ? 'No disponible' : 'Añadir al Carrito'}
+                            </button>
                         </div>
                     </div>
                 </div>
+            `;
+        });
 
-                <div class="col">
-                    <div class="product-card-small border rounded p-2 h-100">
-                        <div class="img-container-small">
-                            <img src="./images/Jalea real.PNG" alt="Jalea Real">
-                        </div>
-                        <div class="ps-1 mt-2">
-                            <p class="mb-0 text-uppercase x-small text-muted">JALEA REAL</p>
-                            <p class="fw-bold mb-0">$30.000</p>
-                        </div>
-                    </div>
-                </div>
+        // Aplicar placeholder si fallan todas las imágenes
+        configurarErroresImagen();
+    }
 
-                <div class="col">
-                    <div class="product-card-small border rounded p-2 h-100">
-                        <div class="img-container-small">
-                            <img src="./images/cera.PNG" alt="Cera de Abeja">
-                        </div>
-                        <div class="ps-1 mt-2">
-                            <p class="mb-0 text-uppercase x-small text-muted">CERA DE ABEJA</p>
-                            <p class="fw-bold mb-0">$30.000</p>
-                        </div>
-                    </div>
-                </div>
+    function configurarErroresImagen() {
+        document.querySelectorAll('.img-producto-file').forEach(img => {
+            img.addEventListener('error', function() {
+                if(this.getAttribute('onfailure') === 'placeholder') {
+                    this.src = 'https://via.placeholder.com/250x250?text=Miel-API';
+                }
+            });
+        });
+    }
 
-                <div class="col">
-                    <div class="product-card-small border rounded p-2 h-100">
-                        <div class="img-container-small">
-                            <img src="./images/Gotas-de-miel angelita.png" alt="Miel Angelita">
-                        </div>
-                        <div class="ps-1 mt-2">
-                            <p class="mb-0 text-uppercase x-small text-muted">MIEL ANGELITA - GOTAS</p>
-                            <p class="fw-bold mb-0">$30.000</p>
-                        </div>
-                    </div>
-                </div>
+    // 4. BUSCADOR EN TIEMPO REAL
+    // Buscamos el input de la barra de navegación (asegúrate de que tenga esta clase o id)
+    const inputBuscar = document.querySelector('.search-bar input');
+    if(inputBuscar) {
+        inputBuscar.addEventListener('keyup', (e) => {
+            const texto = e.target.value.toLowerCase();
+            const filtrados = productosCatalogo.filter(p => 
+                p.nombre_producto.toLowerCase().includes(texto) || 
+                (p.tipo && p.tipo.toLowerCase().includes(texto))
+            );
+            renderizarTarjetas(filtrados);
+        });
+    }
 
-                <div class="col">
-                    <div class="product-card-small border rounded p-2 h-100">
-                        <div class="img-container-small">
-                            <img src="./images/abeja reina.jpg" alt="Abeja Real">
-                        </div>
-                        <div class="ps-1 mt-2">
-                            <p class="mb-0 text-uppercase x-small text-muted">ABEJA REINA</p>
-                            <p class="fw-bold mb-0">$100.000</p>
-                        </div>
-                    </div>
-                </div>
+    function agregarAlCarrito(id) {
+    // 1. Buscar los datos completos del producto en nuestra lista actual
+    const producto = productosCatalogo.find(p => p.id_producto === id);
+    
+    if (!producto) return;
 
-                <div class="col">
-                    <div class="product-card-small border rounded p-2 h-100">
-                        <div class="img-container-small">
-                            <img src="./images/polen.PNG" alt="Polen">
-                        </div>
-                        <div class="ps-1 mt-2">
-                            <p class="mb-0 text-uppercase x-small text-muted">POLEN</p>
-                            <p class="fw-bold mb-0">$30.000</p>
-                        </div>
-                    </div>
-                </div>
+    // 2. Obtener el carrito actual de LocalStorage (o crear uno vacío si no existe)
+    let carrito = JSON.parse(localStorage.getItem('carritoMielAPI')) || [];
 
-                <div class="col">
-                    <div class="product-card-small border rounded p-2 h-100">
-                        <div class="img-container-small">
-                            <img src="./images/Apitoxina2 gel.webp" alt="Apitoxina Gel">
-                        </div>
-                        <div class="ps-1 mt-2">
-                            <p class="mb-0 text-uppercase x-small text-muted">APITOXINA GEL</p>
-                            <p class="fw-bold mb-0">$20.000</p>
-                        </div>
-                    </div>
-                </div>
+    // 3. Revisar si el producto ya está en el carrito
+    const indice = carrito.findIndex(item => item.id_producto === id);
 
-                <div class="col">
-                    <div class="product-card-small border rounded p-2 h-100">
-                        <div class="img-container-small">
-                            <img src="./images/jabon miel.png" alt="Jabon Miel">
-                        </div>
-                        <div class="ps-1 mt-2">
-                            <p class="mb-0 text-uppercase x-small text-muted">JABON PARA EL CUERPO MIEL</p>
-                            <p class="fw-bold mb-0">$6.000</p>
-                        </div>
-                    </div>
-                </div>
+    if (indice !== -1) {
+        // Si ya está, aumentamos la cantidad (validando que no supere el stock)
+        if (carrito[indice].cantidad_seleccionada < producto.cantidad_unidad) {
+            carrito[indice].cantidad_seleccionada++;
+        } else {
+            alert("No hay más stock disponible de este producto.");
+            return;
+        }
+    } else {
+        // Si es nuevo, lo añadimos con cantidad 1
+        carrito.push({
+            id_producto: producto.id_producto,
+            nombre: producto.nombre_producto,
+            precio: producto.precio_unidad,
+            peso: producto.peso_producto,
+            cantidad_seleccionada: 1,
+            stock_maximo: producto.cantidad_unidad
+        });
+    }
 
+    // 4. Guardar de nuevo en LocalStorage
+    localStorage.setItem('carritoMielAPI', JSON.stringify(carrito));
 
+    // 5. Actualizar el contador visual del encabezado
+    actualizarContadorCarrito();
+    
+    alert(`¡${producto.nombre_producto} añadido al carrito!`);
+}
 
+    function actualizarContadorCarrito() {
+    const carrito = JSON.parse(localStorage.getItem('carritoMielAPI')) || [];
+    // Sumamos todas las cantidades_seleccionadas
+    const totalItems = carrito.reduce((sum, item) => sum + item.cantidad_seleccionada, 0);
+    
+    // Buscamos el elemento del contador (asegúrate de que el ID coincida con tu HTML)
+    const badge = document.getElementById('cart-count'); 
+    
+    if (badge) {
+        badge.innerText = totalItems;
+        // Si quieres que el círculo desaparezca cuando está en 0:
+        badge.style.display = totalItems > 0 ? "inline-block" : "none";
+    }
+}
 
-                </div> </div> </div> </main>
+    // Ejecutar siempre al cargar cualquier página
+        document.addEventListener('DOMContentLoaded', actualizarContadorCarrito);
 
-    <footer class="py-5 border-top bg-white mt-5">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-4">
-                    <img src="./images/Logo Miel-API.png" alt="Logo" class="mb-2">
-                    <p class="text-muted small">Soacha - Cundinamarca - Colombia</p>
-                </div>
+    window.onload = cargarCatalogo;
 
-                <div class="col-md-2">
-                    <p class="fw-bold text-muted small text-uppercase">Encuentranos</p>
-                    <ul class="list-unstyled">
-                        <li><a href="#" class="text-decoration-none text-muted small">Facebook <i class="bi bi-facebook"></i></a></li>
-                        <li><a href="#" class="text-decoration-none text-muted small">Instagram <i class="bi bi-instagram"></i></a></li>
-                        <li><a href="#" class="text-decoration-none text-muted small">Youtube <i class="bi bi-youtube"></i></a></li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </footer>
-
+</script>
 </body>
 </html>
