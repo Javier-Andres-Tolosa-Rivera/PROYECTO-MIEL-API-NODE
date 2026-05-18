@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>MIEL_API - Monitor Climático Apícola</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <style>
+        body { background-color: #f8f9fa; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .clima-container { max-width: 900px; margin: 0 auto; }
+        
+        .card-custom {
+            background: white;
+            border-radius: 20px;
+            border: none;
+            transition: all 0.3s ease;
+        }
+
+        #descripcion { text-transform: capitalize; font-weight: bold; }
+
+        #recomendacion-apicola {
+            transition: all 0.5s ease;
+            font-weight: bold;
+        }
+
+        #abeja-clima {
+            transition: transform 0.3s ease;
+            object-fit: cover;
+            border: 5px solid #fff;
+        }
+
+        #abeja-clima:hover { transform: scale(1.05); }
+
+        @media (max-width: 768px) {
+            .info-clima { text-align: center; margin-top: 20px; }
+            h2 { font-size: 1.5rem; }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="clima-container container py-5">
+    <h2 class="text-center mb-4">🌤️ Estado del Clima para tus Trabajadoras</h2>
+
+    <div class="row justify-content-center mb-4">
+        <div class="col-md-6">
+            <label for="ciudad-select" class="form-label fw-bold">📍 Ubicación del apiario:</label>
+            <select id="ciudad-select" class="form-select shadow-sm">
+              <option value="Armenia">Armenia</option>
+              <option value="Arauca">Arauca</option>
+              <option value="Barranquilla">Barranquilla</option>
+              <option value="Bogotá">Bogotá</option>
+              <option value="Bucaramanga">Bucaramanga</option>
+              <option value="Cali">Cali</option>
+              <option value="Cartagena">Cartagena</option>
+              <option value="Cúcuta">Cúcuta</option>
+              <option value="Florencia">Florencia</option>
+              <option value="Ibagué">Ibagué</option>
+              <option value="Inírida">Inírida</option>
+              <option value="Leticia">Leticia</option>
+              <option value="Manizales">Manizales</option>
+              <option value="Medellín">Medellín</option>
+              <option value="Mitú">Mitú</option>
+              <option value="Mocoa">Mocoa</option>
+              <option value="Montería">Montería</option>
+              <option value="Neiva">Neiva</option>
+              <option value="Pasto">Pasto</option>
+              <option value="Pereira">Pereira</option>
+              <option value="Popayán">Popayán</option>
+              <option value="Puerto Carreño">Puerto Carreño</option>
+              <option value="Quibdó">Quibdó</option>
+              <option value="Riohacha">Riohacha</option>
+              <option value="San Andrés">San Andrés</option>
+              <option value="San José del Guaviare">San José del Guaviare</option>
+              <option value="Santa Marta">Santa Marta</option>
+              <option value="Sincelejo">Sincelejo</option>
+              <option value="Tunja">Tunja</option>
+              <option value="Valledupar">Valledupar</option>
+              <option value="Villavicencio">Villavicencio</option>
+              <option value="Yopal">Yopal</option>
+                </select>
+        </div>
+    </div>
+
+    <div class="row align-items-center card-custom p-4 shadow">
+        <div class="col-md-6 text-center">
+            <img id="abeja-clima" src="./images/clima/abeja-feliz.png" alt="Estado Abeja" class="img-fluid rounded-circle shadow-sm" style="max-height: 350px; width: 350px;">
+        </div>
+
+        <div class="col-md-6">
+            <div class="info-clima">
+                <h3 id="ciudad-nombre" class="display-6 mb-3">📍 --</h3>
+                <p class="h5"><strong>Temperatura:</strong> <span id="temp">--</span>°C</p>
+                <p class="h5"><strong>Humedad:</strong> <span id="humedad">--</span>%</p>
+                <p class="h5"><strong>Condición:</strong> <span id="descripcion">--</span></p>
+                
+                <div id="recomendacion-apicola" class="alert mt-4 alert-info">
+                    Obteniendo recomendaciones...
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 1. Función principal que consulta la API
+    async function consultarClima(ciudad) {
+        const alertaDiv = document.getElementById('recomendacion-apicola');
+        const imagenAbeja = document.getElementById('abeja-clima');
+        
+        try {
+            const response = await fetch(`http://localhost:3000/api/clima?ciudad=${ciudad}`);
+            const data = await response.json();
+
+            if (response.ok) {
+                document.getElementById('ciudad-nombre').innerText = `📍 ${data.ciudad}`;
+                document.getElementById('temp').innerText = data.temperatura;
+                document.getElementById('humedad').innerText = data.humedad;
+                document.getElementById('descripcion').innerText = data.descripcion;
+                alertaDiv.innerText = data.recomendacion;
+
+                // --- LÓGICA DE IMAGEN Y COLORES ---
+                alertaDiv.className = "alert mt-4"; 
+
+                // Lógica de detección por palabras clave o emojis
+                if (data.recomendacion.includes("⚠️") || data.recomendacion.includes("lluvia") || data.recomendacion.includes("lluvias")) {
+                    alertaDiv.classList.add("alert-danger");
+                    imagenAbeja.src = "./images/clima/abeja-lluvia.png";
+                } 
+                else if (data.recomendacion.includes("🔥") || data.recomendacion.includes("Calor")) {
+                    alertaDiv.classList.add("alert-warning");
+                    imagenAbeja.src = "./images/clima/abeja-calor.png";
+                } 
+                else if (data.recomendacion.includes("❄️") || data.recomendacion.includes("baja")) {
+                    alertaDiv.classList.add("alert-info");
+                    imagenAbeja.src = "./images/clima/abeja-frio.png";
+                } 
+                else {
+                    alertaDiv.classList.add("alert-success");
+                    imagenAbeja.src = "./images/clima/abeja-feliz.png";
+                }
+
+            } else {
+                alertaDiv.innerText = "Error: " + data.error;
+                alertaDiv.className = "alert alert-secondary mt-4";
+            }
+        } catch (error) {
+            console.error("Error:", error);
+            alertaDiv.innerText = "No se pudo conectar con el servidor.";
+            alertaDiv.className = "alert alert-dark mt-4";
+        }
+    }
+
+    // --- ESTA ES LA PARTE QUE TE FALTABA ---
+    document.addEventListener("DOMContentLoaded", () => {
+        const selector = document.getElementById('ciudad-select');
+
+        // Escucha el cambio del selector
+        selector.addEventListener('change', (event) => {
+            consultarClima(event.target.value);
+        });
+
+        // Carga inicial al abrir la página
+        consultarClima(selector.value);
+    });
+</script>
+
+</body>
+</html>

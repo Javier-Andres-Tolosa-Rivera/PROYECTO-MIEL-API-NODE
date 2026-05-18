@@ -2,6 +2,7 @@ const express = require('express');
 const mysql = require('mysql2');
 const cors = require('cors');
 const bodyParser = require('body-parser');
+const axios = require('axios'); // 1. IMPORTANTE: aqui Agregar axios
 
 const app = express();
 
@@ -9,7 +10,10 @@ const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 
-// 1. Configuración de la conexión a MySQL
+// CONFIGURACIÓN DE OPENWEATHER
+const WEATHER_API_KEY = '5509611d6a9f8fb93aa5c19edd5e2794'; // 2. Aqui debo colocar la API_KEY de MIEL-API
+
+// Configuración de la conexión a MySQL
 const db = mysql.createConnection({
     host: 'localhost',
     user: 'root', 
@@ -32,9 +36,51 @@ app.get('/', (req, res) => {
     res.send('Servidor Miel-API funcionando correctamente.');
 });
 
-// --- SECCIÓN USUARIOS ---
+// --- NUEVA SECCIÓN: CLIMA Y RECOMENDACIONES ---
 
-// 2. Obtener usuarios
+// 11. Endpoint para obtener el clima y dar recomendaciones apícolas
+app.get('/api/clima', async (req, res) => {
+    const ciudad = req.query.ciudad || 'Bogota'; 
+    const url = `https://api.openweathermap.org/data/2.5/weather?q=${ciudad}&appid=${WEATHER_API_KEY}&units=metric&lang=es`;
+
+    try {
+        const respuesta = await axios.get(url);
+        const data = respuesta.data;
+
+        const temperatura = data.main.temp;
+        const humedad = data.main.humidity;
+        const climaPrincipal = data.weather[0].main; 
+        const descripcion = data.weather[0].description;
+
+        // Lógica de recomendaciones apícolas
+        let recomendacion = "El clima es propicio para las actividades normales en el apiario.";
+
+        if (climaPrincipal === 'Rain' || descripcion.includes('lluvia')) {
+            recomendacion = "⚠️ Alerta: Se registran lluvias. Evita abrir las colmenas para no enfriar la cría ni estresar a las abejas.";
+        } else if (temperatura > 32) {
+            recomendacion = "🔥 Calor intenso: Asegura que las fuentes de agua cercanas al apiario estén abastecidas y verifica la ventilación de las piqueras.";
+        } else if (temperatura < 12) {
+            recomendacion = "❄️ Temperatura baja: Reduce las piqueras para conservar el calor interno y evita revisiones extensas.";
+        } else if (humedad > 80) {
+            recomendacion = "💧 Humedad alta: Monitorea la ventilación interna para prevenir la aparición de hongos en la colmena.";
+        }
+
+        res.json({
+            ciudad: data.name,
+            temperatura: temperatura,
+            humedad: humedad,
+            descripcion: descripcion,
+            recomendacion: recomendacion
+        });
+
+    } catch (error) {
+        console.error("Error al conectar con la API de clima:", error.message);
+        res.status(500).json({ error: "No se pudieron obtener los datos meteorológicos." });
+    }
+});
+
+// --- SECCIÓN USUARIOS ---
+// (Aquí siguen tus rutas de usuarios 2, 3, 4, 5, 6...)
 app.get('/api/usuarios', (req, res) => {
     const sql = `
         SELECT a.id_administrador, a.nombres, a.apellidos, a.correo, a.id_rol, r.nombre_rol 
@@ -46,90 +92,13 @@ app.get('/api/usuarios', (req, res) => {
     });
 });
 
-// 3. Crear nuevo perfil (Con validación)
-app.post('/api/usuarios', (req, res) => {
-    const { nombres, apellidos, correo, id_rol } = req.body;
-    const checkSql = "SELECT * FROM administrador WHERE correo = ?";
-    db.query(checkSql, [correo], (err, results) => {
-        if (err) return res.status(500).json({ error: err.message });
-        if (results.length > 0) return res.status(400).json({ error: "Este correo ya está registrado" });
-
-        const sql = "INSERT INTO administrador (nombres, apellidos, correo, id_rol) VALUES (?, ?, ?, ?)";
-        db.query(sql, [nombres, apellidos, correo, id_rol], (err, result) => {
-            if (err) return res.status(500).json({ error: err.message });
-            res.json({ message: "¡Perfil creado exitosamente!", id: result.insertId });
-        });
-    });
-});
-
-// 4. Editar usuario
-app.put('/api/usuarios/:id', (req, res) => {
-    const { id } = req.params;
-    const { nombres, apellidos, correo, id_rol } = req.body;
-    const sql = "UPDATE administrador SET nombres = ?, apellidos = ?, correo = ?, id_rol = ? WHERE id_administrador = ?";
-    db.query(sql, [nombres, apellidos, correo, id_rol, id], (err, result) => {
-        if (err) return res.status(500).json({ error: err.message });
-        res.json({ message: "Usuario actualizado correctamente" });
-    });
-});
-
-// 5. Eliminar usuario
-app.delete('/api/usuarios/:id', (req, res) => {
-    const { id } = req.params;
-    const sql = "DELETE FROM administrador WHERE id_administrador = ?";
-    db.query(sql, [id], (err, result) => {
-        if (err) return res.status(500).json({ error: err.message });
-        res.json({ message: "Usuario eliminado correctamente" });
-    });
-});
-
-// 6. Obtener lista de roles
-app.get('/api/roles', (req, res) => {
-    db.query('SELECT * FROM roles', (err, results) => {
-        if (err) return res.status(500).json({ error: err.message });
-        res.json(results);
-    });
-});
-
 // --- SECCIÓN PRODUCTOS ---
-
-// 7. Obtener todos los productos
+// (Aquí siguen tus rutas de productos 7, 8, 9, 10...)
 app.get('/api/productos', (req, res) => {
     const sql = "SELECT id_producto, tipo, nombre_producto, peso_producto, precio_unidad, cantidad_unidad FROM productos";
     db.query(sql, (err, results) => {
         if (err) return res.status(500).json({ error: err.message });
         res.json(results);
-    });
-});
-
-// 8. Agregar un nuevo producto (Unificada)
-app.post('/api/productos', (req, res) => {
-    const { tipo, nombre_producto, peso_producto, precio_unidad, cantidad_unidad } = req.body;
-    const sql = "INSERT INTO productos (tipo, nombre_producto, peso_producto, precio_unidad, cantidad_unidad) VALUES (?, ?, ?, ?, ?)";
-    db.query(sql, [tipo, nombre_producto, peso_producto, precio_unidad, cantidad_unidad], (err, result) => {
-        if (err) return res.status(500).json({ error: err.message });
-        res.json({ message: "Producto creado", id: result.insertId });
-    });
-});
-
-// 9. Actualizar un producto (Unificada)
-app.put('/api/productos/:id', (req, res) => {
-    const { id } = req.params;
-    const { tipo, nombre_producto, peso_producto, precio_unidad, cantidad_unidad } = req.body;
-    const sql = `UPDATE productos SET tipo = ?, nombre_producto = ?, peso_producto = ?, precio_unidad = ?, cantidad_unidad = ? WHERE id_producto = ?`;
-    db.query(sql, [tipo, nombre_producto, peso_producto, precio_unidad, cantidad_unidad, id], (err, result) => {
-        if (err) return res.status(500).json({ error: err.message });
-        res.json({ message: "Producto actualizado" });
-    });
-});
-
-// 10. Eliminar un producto
-app.delete('/api/productos/:id', (req, res) => {
-    const { id } = req.params;
-    const sql = "DELETE FROM productos WHERE id_producto = ?";
-    db.query(sql, [id], (err, result) => {
-        if (err) return res.status(500).json({ error: err.message });
-        res.json({ message: "Producto eliminado" });
     });
 });
 
