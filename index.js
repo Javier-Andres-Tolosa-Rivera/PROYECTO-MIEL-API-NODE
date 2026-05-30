@@ -3,12 +3,21 @@ const mysql = require('mysql2');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const axios = require('axios'); // 1. IMPORTANTE: aqui Agregar axios
+const https = require('https');   // AGREGADO: Módulo nativo para HTTPS
+const fs = require('fs');         // AGREGADO: Módulo nativo para leer archivos
+const path = require('path');     // AGREGADO: Módulo nativo para manejar rutas
 
 const app = express();
 
 // Middlewares
 app.use(cors());
 app.use(bodyParser.json());
+
+// --- CONFIGURACIÓN DE SEGURIDAD SSL REAL ---
+const opcionesSSL = {
+    key: fs.readFileSync(path.join(__dirname, 'certificados', 'localhost+2-key.pem')),
+    cert: fs.readFileSync(path.join(__dirname, 'certificados', 'localhost+2.pem'))
+};
 
 // CONFIGURACIÓN DE OPENWEATHER
 const WEATHER_API_KEY = '5509611d6a9f8fb93aa5c19edd5e2794'; // 2. Aqui debo colocar la API_KEY de MIEL-API
@@ -48,7 +57,7 @@ app.get('/api/clima', async (req, res) => {
         const data = respuesta.data;
 
         const temperatura = data.main.temp;
-        const humedad = data.main.humidity;
+        const humidity = data.main.humidity;
         const climaPrincipal = data.weather[0].main; 
         const descripcion = data.weather[0].description;
 
@@ -61,14 +70,14 @@ app.get('/api/clima', async (req, res) => {
             recomendacion = "🔥 Calor intenso: Asegura que las fuentes de agua cercanas al apiario estén abastecidas y verifica la ventilación de las piqueras.";
         } else if (temperatura < 12) {
             recomendacion = "❄️ Temperatura baja: Reduce las piqueras para conservar el calor interno y evita revisiones extensas.";
-        } else if (humedad > 80) {
+        } else if (humidity > 80) {
             recomendacion = "💧 Humedad alta: Monitorea la ventilación interna para prevenir la aparición de hongos en la colmena.";
         }
 
         res.json({
             ciudad: data.name,
             temperatura: temperatura,
-            humedad: humedad,
+            humedad: humidity,
             descripcion: descripcion,
             recomendacion: recomendacion
         });
@@ -80,7 +89,6 @@ app.get('/api/clima', async (req, res) => {
 });
 
 // --- SECCIÓN USUARIOS ---
-// (Aquí siguen tus rutas de usuarios 2, 3, 4, 5, 6...)
 app.get('/api/usuarios', (req, res) => {
     const sql = `
         SELECT a.id_administrador, a.nombres, a.apellidos, a.correo, a.id_rol, r.nombre_rol 
@@ -93,7 +101,6 @@ app.get('/api/usuarios', (req, res) => {
 });
 
 // --- SECCIÓN PRODUCTOS ---
-// (Aquí siguen tus rutas de productos 7, 8, 9, 10...)
 app.get('/api/productos', (req, res) => {
     const sql = "SELECT id_producto, tipo, nombre_producto, peso_producto, precio_unidad, cantidad_unidad FROM productos";
     db.query(sql, (err, results) => {
@@ -102,8 +109,8 @@ app.get('/api/productos', (req, res) => {
     });
 });
 
-// --- INICIO DEL SERVIDOR ---
+// --- INICIO DEL SERVIDOR SEGURIZADO ---
 const PORT = 3000;
-app.listen(PORT, () => {
-    console.log(`🚀 Servidor corriendo en: http://localhost:${PORT}`);
+https.createServer(opcionesSSL, app).listen(PORT, () => {
+    console.log(`🚀 Servidor seguro corriendo en: https://localhost:${PORT}`);
 });

@@ -110,7 +110,7 @@
         const imagenAbeja = document.getElementById('abeja-clima');
         
         try {
-            const response = await fetch(`http://localhost:3000/api/clima?ciudad=${ciudad}`);
+            const response = await fetch(`https://localhost:3000/api/clima?ciudad=${ciudad}`);
             const data = await response.json();
 
             if (response.ok) {

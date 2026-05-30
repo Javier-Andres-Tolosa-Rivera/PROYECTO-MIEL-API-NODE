@@ -81,7 +81,7 @@
     // 2. Función para cargar los productos desde la API
     async function cargarCatalogo() {
         try {
-            const res = await fetch('http://localhost:3000/api/productos');
+            const res = await fetch('https://localhost:3000/api/productos');
             productosCatalogo = await res.json();
             renderizarTarjetas(productosCatalogo);
         } catch (err) {
