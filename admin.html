@@ -103,45 +103,44 @@
 <script>
     let editandoUser = false;
 
-    async function cargarRoles() {
-        try {
-            const res = await fetch('http://localhost:3000/api/roles');
-            const roles = await res.json();
-            const select = document.getElementById('id_rol');
-            select.innerHTML = '<option value="" selected disabled>Seleccione un rol...</option>';
-            roles.forEach(rol => {
-                select.innerHTML += `<option value="${rol.id_rol}">${rol.nombre_rol}</option>`;
-            });
-        } catch (err) { console.error("Error cargando roles", err); }
-    }
+// CARGAR EL SELECTOR DE ROLES DINÁMICAMENTE (CORREGIDO A HTTPS)
+async function cargarRoles() {
+    try {
+        const res = await fetch('https://localhost:3000/api/roles');
+        const roles = await res.json();
+        const select = document.getElementById('id_rol');
+        select.innerHTML = '<option value="" selected disabled>Seleccione un rol...</option>';
+        roles.forEach(rol => {
+            select.innerHTML += `<option value="${rol.id_rol}">${rol.nombre_rol}</option>`;
+        });
+    } catch (err) { console.error("Error cargando roles", err); }
+}
 
-    function prepararNuevoUsuario() {
+function prepararNuevoUsuario() {
     editandoUser = false;
     document.getElementById('user-id').value = ""; 
     document.getElementById('formUsuario').reset();
     document.getElementById('modalTituloUser').innerText = "👤 Crear Nuevo Perfil";
     cargarRoles();
     new bootstrap.Modal(document.getElementById('modalUsuario')).show();
-    }
+}
 
-    // --- FUNCIÓN PARA CARGAR DATOS EN EL MODAL PARA EDITAR ---
-    async function editarUsuario(id) {
+// --- FUNCIÓN PARA CARGAR DATOS EN EL MODAL PARA EDITAR (CORREGIDO CON ID_USUARIO) ---
+async function editarUsuario(id) {
     editandoUser = true;
     document.getElementById('modalTituloUser').innerText = "🔄 Editar Administrador";
     await cargarRoles(); 
     
     try {
-        const res = await fetch('http://localhost:3000/api/usuarios');
+        const res = await fetch('https://localhost:3000/api/usuarios');
         const usuarios = await res.json();
-        const user = usuarios.find(u => u.id_administrador === id);
+        const user = usuarios.find(u => u.id_usuario === id);
 
         if (user) {
-            document.getElementById('user-id').value = user.id_administrador;
+            document.getElementById('user-id').value = user.id_usuario;
             document.getElementById('nombres').value = user.nombres;
             document.getElementById('apellidos').value = user.apellidos;
             document.getElementById('correo').value = user.correo;
-            
-            // ESTA LÍNEA HACE LA MAGIA: Selecciona el rol actual
             document.getElementById('id_rol').value = user.id_rol;
 
             new bootstrap.Modal(document.getElementById('modalUsuario')).show();
@@ -149,7 +148,7 @@
     } catch (err) { console.error("Error al cargar datos para editar", err); }
 }
 
-    // --- FUNCIÓN PARA GUARDAR O ACTUALIZAR (CORREGIDA) ---
+// --- FUNCIÓN PARA GUARDAR O ACTUALIZAR ---
 document.getElementById('formUsuario').addEventListener('submit', async (e) => {
     e.preventDefault();
     
@@ -158,11 +157,10 @@ document.getElementById('formUsuario').addEventListener('submit', async (e) => {
         nombres: document.getElementById('nombres').value.trim(),
         apellidos: document.getElementById('apellidos').value.trim(),
         correo: document.getElementById('correo').value.trim(),
-        id_rol: parseInt(document.getElementById('id_rol').value) // Aseguramos que sea número
+        id_rol: parseInt(document.getElementById('id_rol').value)
     };
 
-    // Si estamos editando usamos PUT y el ID, si no, POST sin ID
-    const url = editandoUser ? `http://localhost:3000/api/usuarios/${id}` : 'http://localhost:3000/api/usuarios';
+    const url = editandoUser ? `https://localhost:3000/api/usuarios/${id}` : 'https://localhost:3000/api/usuarios';
     const metodo = editandoUser ? 'PUT' : 'POST';
 
     try {
@@ -178,7 +176,6 @@ document.getElementById('formUsuario').addEventListener('submit', async (e) => {
             alert(editandoUser ? "✅ Usuario actualizado" : "✅ Usuario creado con éxito");
             location.reload(); 
         } else {
-            // Esto nos dirá qué está rechazando el servidor exactamente
             alert("❌ Error del servidor: " + (resultado.error || "No se pudo crear"));
         }
     } catch (err) {
@@ -187,42 +184,46 @@ document.getElementById('formUsuario').addEventListener('submit', async (e) => {
     }
 });
 
-    async function cargarUsuarios() {
+// CARGAR LA GRILLA PRINCIPAL DE USUARIOS (CORREGIDO CON ID_USUARIO)
+async function cargarUsuarios() {
+    try {
+        const respuesta = await fetch('https://localhost:3000/api/usuarios');
+        const usuarios = await respuesta.json();
+        const tabla = document.getElementById('tabla-usuarios');
+        tabla.innerHTML = "";
+        usuarios.forEach(user => {
+            const claseRol = user.nombre_rol === 'Administrador' ? 'bg-admin' : 'bg-info text-dark';
+            tabla.innerHTML += `
+                <tr>
+                    <td>${user.id_usuario}</td>
+                    <td class="fw-bold">${user.nombres} ${user.apellidos}</td>
+                    <td>${user.correo}</td>
+                    <td><span class="rol-badge ${claseRol}">${user.nombre_rol}</span></td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-primary" onclick="editarUsuario(${user.id_usuario})">Editar</button>
+                        <button class="btn btn-sm btn-outline-danger" onclick="eliminarUsuario(${user.id_usuario})">Eliminar</button>
+                    </td>
+                </tr>`;
+        });
+    } catch (error) { 
+        console.error("Error:", error); 
+        document.getElementById('tabla-usuarios').innerHTML = `<tr><td colspan="5" class="text-center text-danger">Error al conectar con el servidor</td></tr>`;
+    }
+}
+
+async function eliminarUsuario(id) {
+    if (confirm(`¿Estás seguro de eliminar al usuario con ID ${id}?`)) {
         try {
-            const respuesta = await fetch('http://localhost:3000/api/usuarios');
-            const usuarios = await respuesta.json();
-            const tabla = document.getElementById('tabla-usuarios');
-            tabla.innerHTML = "";
-            usuarios.forEach(user => {
-                const claseRol = user.nombre_rol === 'Administrador' ? 'bg-admin' : 'bg-info text-dark';
-                tabla.innerHTML += `
-                    <tr>
-                        <td>${user.id_administrador}</td>
-                        <td class="fw-bold">${user.nombres} ${user.apellidos}</td>
-                        <td>${user.correo}</td>
-                        <td><span class="rol-badge ${claseRol}">${user.nombre_rol}</span></td>
-                        <td>
-                            <button class="btn btn-sm btn-outline-primary" onclick="editarUsuario(${user.id_administrador})">Editar</button>
-                            <button class="btn btn-sm btn-outline-danger" onclick="eliminarUsuario(${user.id_administrador})">Eliminar</button>
-                        </td>
-                    </tr>`;
-            });
-        } catch (error) { console.error("Error:", error); }
+            const res = await fetch(`https://localhost:3000/api/usuarios/${id}`, { method: 'DELETE' });
+            if (res.ok) {
+                alert("Usuario eliminado");
+                cargarUsuarios();
+            }
+        } catch (err) { alert("Error de red"); }
     }
+}
 
-    async function eliminarUsuario(id) {
-        if (confirm(`¿Estás seguro de eliminar al usuario con ID ${id}?`)) {
-            try {
-                const res = await fetch(`http://localhost:3000/api/usuarios/${id}`, { method: 'DELETE' });
-                if (res.ok) {
-                    alert("Usuario eliminado");
-                    cargarUsuarios();
-                }
-            } catch (err) { alert("Error de red"); }
-        }
-    }
-
-    window.onload = cargarUsuarios;
+window.onload = cargarUsuarios;
 </script>
 
 </body>

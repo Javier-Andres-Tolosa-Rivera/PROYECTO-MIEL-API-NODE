@@ -2,10 +2,11 @@ const express = require('express');
 const mysql = require('mysql2');
 const cors = require('cors');
 const bodyParser = require('body-parser');
-const axios = require('axios'); // 1. IMPORTANTE: aqui Agregar axios
-const https = require('https');   // AGREGADO: Módulo nativo para HTTPS
-const fs = require('fs');         // AGREGADO: Módulo nativo para leer archivos
-const path = require('path');     // AGREGADO: Módulo nativo para manejar rutas
+const axios = require('axios'); // Agregar axios
+const https = require('https');   // Módulo nativo para HTTPS
+const fs = require('fs');         // Módulo nativo para leer archivos
+const path = require('path');     // Módulo nativo para manejar rutas
+const bcrypt = require('bcryptjs'); // AGREGADO: Para encriptar contraseñas en el futuro
 
 const app = express();
 
@@ -20,7 +21,7 @@ const opcionesSSL = {
 };
 
 // CONFIGURACIÓN DE OPENWEATHER
-const WEATHER_API_KEY = '5509611d6a9f8fb93aa5c19edd5e2794'; // 2. Aqui debo colocar la API_KEY de MIEL-API
+const WEATHER_API_KEY = '5509611d6a9f8fb93aa5c19edd5e2794'; 
 
 // Configuración de la conexión a MySQL
 const db = mysql.createConnection({
@@ -45,9 +46,7 @@ app.get('/', (req, res) => {
     res.send('Servidor Miel-API funcionando correctamente.');
 });
 
-// --- NUEVA SECCIÓN: CLIMA Y RECOMENDACIONES ---
-
-// 11. Endpoint para obtener el clima y dar recomendaciones apícolas
+// --- SECCIÓN: CLIMA Y RECOMENDACIONES ---
 app.get('/api/clima', async (req, res) => {
     const ciudad = req.query.ciudad || 'Bogota'; 
     const url = `https://api.openweathermap.org/data/2.5/weather?q=${ciudad}&appid=${WEATHER_API_KEY}&units=metric&lang=es`;
@@ -61,7 +60,6 @@ app.get('/api/clima', async (req, res) => {
         const climaPrincipal = data.weather[0].main; 
         const descripcion = data.weather[0].description;
 
-        // Lógica de recomendaciones apícolas
         let recomendacion = "El clima es propicio para las actividades normales en el apiario.";
 
         if (climaPrincipal === 'Rain' || descripcion.includes('lluvia')) {
@@ -77,7 +75,7 @@ app.get('/api/clima', async (req, res) => {
         res.json({
             ciudad: data.name,
             temperatura: temperatura,
-            humedad: humidity,
+            humidity: humidity,
             descripcion: descripcion,
             recomendacion: recomendacion
         });
@@ -91,18 +89,119 @@ app.get('/api/clima', async (req, res) => {
 // --- SECCIÓN USUARIOS ---
 app.get('/api/usuarios', (req, res) => {
     const sql = `
-        SELECT a.id_administrador, a.nombres, a.apellidos, a.correo, a.id_rol, r.nombre_rol 
-        FROM administrador a
-        INNER JOIN roles r ON a.id_rol = r.id_rol`;
+        SELECT u.id_usuario, u.nombres, u.apellidos, u.correo, u.celular, u.id_rol, r.nombre_rol 
+        FROM usuarios u
+        INNER JOIN roles r ON u.id_rol = r.id_rol`;
     db.query(sql, (err, results) => {
         if (err) return res.status(500).json({ error: err.message });
         res.json(results);
     });
 });
 
-// --- SECCIÓN PRODUCTOS ---
+// Endpoint auxiliar para rellenar el dropdown del rol en el formulario del Frontend
+app.get('/api/roles', (req, res) => {
+    const sql = "SELECT id_rol, nombre_rol FROM roles ORDER BY id_rol ASC";
+    db.query(sql, (err, results) => {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json(results);
+    });
+});
+
+
+// =========================================================================
+// NUEVO -> PASO 2: ENDPOINTS DE AUTENTICACIÓN (LOGIN Y REGISTRO CON BCRYPT)
+// =========================================================================
+
+// Endpoint para el inicio de sesión
+app.post('/api/login', (req, res) => {
+    const { correo, contrasena } = req.body;
+
+    if (!correo || !contrasena) {
+        return res.status(400).json({ error: "El correo y la contraseña son obligatorios." });
+    }
+
+    // Buscamos al usuario por su correo electrónico
+    const sql = "SELECT id_usuario, nombres, apellidos, correo, id_rol, contrasena FROM usuarios WHERE correo = ?";
+    db.query(sql, [correo], async (err, results) => {
+        if (err) return res.status(500).json({ error: err.message });
+        
+        // Si no encuentra registros con ese correo
+        if (results.length === 0) {
+            return res.status(401).json({ error: "El correo electrónico no se encuentra registrado." });
+        }
+
+        const usuario = results[0];
+
+        // Comparamos la contraseña que escribió el usuario con el Hash encriptado en la Base de Datos
+        const coinciden = await bcrypt.compare(contrasena, usuario.contrasena);
+
+        if (!coinciden) {
+            return res.status(401).json({ error: "Contraseña incorrecta." });
+        }
+
+        // Si la clave coincide, enviamos el éxito junto con sus datos y su respectivo rol
+        res.json({
+            mensaje: "¡Ingreso exitoso!",
+            usuario: {
+                id_usuario: usuario.id_usuario,
+                nombres: usuario.nombres,
+                apellidos: usuario.apellidos,
+                correo: usuario.correo,
+                id_rol: usuario.id_rol
+            }
+        });
+    });
+});
+
+// Endpoint para registrar nuevos usuarios clientes externos
+app.post('/api/registro', async (req, res) => {
+    const { nombres, apellidos, correo, contrasena } = req.body;
+
+    if (!nombres || !correo || !contrasena) {
+        return res.status(400).json({ error: "Nombres, correo y contraseña son obligatorios." });
+    }
+
+    try {
+        // Encriptamos la contraseña del nuevo cliente
+        const salt = await bcrypt.genSalt(10);
+        const hashContrasena = await bcrypt.hash(contrasena, salt);
+
+        // Rol por defecto para registros de la web: Cliente (id_rol = 4)
+        const idRolCliente = 4; 
+
+        const sql = "INSERT INTO usuarios (id_rol, nombres, apellidos, correo, contrasena) VALUES (?, ?, ?, ?, ?)";
+        db.query(sql, [idRolCliente, nombres, apellidos, correo, hashContrasena], (err, result) => {
+            if (err) {
+                if (err.code === 'ER_DUP_ENTRY') {
+                    return res.status(400).json({ error: "Este correo electrónico ya está registrado." });
+                }
+                return res.status(500).json({ error: err.message });
+            }
+            res.status(201).json({ mensaje: "¡Usuario registrado con éxito en Miel-API!" });
+        });
+
+    } catch (error) {
+        res.status(500).json({ error: "Error en el servidor al procesar el registro." });
+    }
+});
+// =========================================================================
+
+
+// --- SECCIÓN PRODUCTOS (CORREGIDA PARA SOPORTAR INVENTARIO Y CATÁLOGO) ---
 app.get('/api/productos', (req, res) => {
-    const sql = "SELECT id_producto, tipo, nombre_producto, peso_producto, precio_unidad, cantidad_unidad FROM productos";
+    const sql = `
+        SELECT 
+            id_producto AS id_producto,
+            nombre_producto AS nombre_producto, -- Original para Catálogo
+            nombre_producto AS producto,        -- Alias para Inventarios
+            tipo AS tipo,
+            peso_producto AS peso_producto,     -- Original para Catálogo
+            peso_producto AS presentacion,      -- Alias para Inventarios
+            precio_unidad AS precio_unidad,     -- Original para Catálogo
+            precio_unidad AS precio,            -- Alias para Inventarios
+            cantidad_unidad AS cantidad_unidad, -- Original para Catálogo
+            cantidad_unidad AS stock            -- Alias para Inventarios
+        FROM productos`;
     db.query(sql, (err, results) => {
         if (err) return res.status(500).json({ error: err.message });
         res.json(results);

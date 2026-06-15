@@ -103,126 +103,120 @@
 
 <script>
     let todosLosProductos = [];
-    let editando = false;
+let editando = false;
 
-    // 1. CARGAR DATOS DE LA API
-    async function cargarInventario() {
-        try {
-            const res = await fetch('http://localhost:3000/api/productos');
-            if (!res.ok) throw new Error('Error en la red');
-            todosLosProductos = await res.json();
-            renderizarTabla(todosLosProductos);
-        } catch (err) {
-            console.error("Error al cargar:", err);
-            document.getElementById('tabla-inventario').innerHTML = `<tr><td colspan="7" class="text-center text-danger">Error al conectar con el servidor</td></tr>`;
-        }
+// 1. CARGAR DATOS DE LA API (CORREGIDO A HTTPS)
+async function cargarInventario() {
+    try {
+        const res = await fetch('https://localhost:3000/api/productos');
+        if (!res.ok) throw new Error('Error en la red');
+        todosLosProductos = await res.json();
+        renderizarTabla(todosLosProductos);
+    } catch (err) {
+        console.error("Error al cargar:", err);
+        document.getElementById('tabla-inventario').innerHTML = `<tr><td colspan="7" class="text-center text-danger">Error al conectar con el servidor</td></tr>`;
     }
+}
 
-    // 2. DIBUJAR LA TABLA
-    function renderizarTabla(lista) {
-        const tabla = document.getElementById('tabla-inventario');
-        tabla.innerHTML = "";
+// 2. DIBUJAR LA TABLA (CORREGIDO CON LAS NUEVAS VARIABLES)
+function renderizarTabla(lista) {
+    const tabla = document.getElementById('tabla-inventario');
+    tabla.innerHTML = "";
+    
+    lista.forEach((p, index) => {
+        const claseStock = p.stock <= 15 ? 'text-danger fw-bold' : 'text-success fw-bold';
         
-        lista.forEach((p, index) => {
-            const claseStock = p.cantidad_unidad <= 15 ? 'text-danger fw-bold' : 'text-success fw-bold';
-            
-            tabla.innerHTML += `
-                <tr>
-                    <td class="text-muted">${index + 1}</td>
-                    <td class="fw-bold">${p.nombre_producto}</td>
-                    <td><span class="badge bg-secondary text-white">${p.tipo || 'Sin tipo'}</span></td>
-                    <td>${p.peso_producto}</td>
-                    <td>$ ${parseFloat(p.precio_unidad).toLocaleString()}</td>
-                    <td class="${claseStock}">${p.cantidad_unidad} unidades</td>
-                    <td>
-                        <button class="btn btn-sm btn-outline-primary me-1" onclick="abrirEditor(${p.id_producto})">
-                            <i class="bi bi-pencil"></i> Editar
-                        </button>
-                        <button class="btn btn-sm btn-outline-danger" onclick="eliminarProducto(${p.id_producto})">
-                            <i class="bi bi-trash"></i> Eliminar
-                        </button>
-                    </td>
-                </tr>`;
-        });
-    }
+        tabla.innerHTML += `
+            <tr>
+                <td class="text-muted">${index + 1}</td>
+                <td class="fw-bold">${p.producto}</td>
+                <td><span class="badge bg-secondary text-white">${p.tipo || 'Sin tipo'}</span></td>
+                <td>${p.presentacion}</td>
+                <td>$ ${parseFloat(p.precio).toLocaleString()}</td>
+                <td class="${claseStock}">${p.stock} unidades</td>
+                <td>
+                    <button class="btn btn-sm btn-outline-primary me-1" onclick="abrirEditor(${p.id_producto})">
+                        <i class="bi bi-pencil"></i> Editar
+                    </button>
+                    <button class="btn btn-sm btn-outline-danger" onclick="eliminarProducto(${p.id_producto})">
+                        <i class="bi bi-trash"></i> Eliminar
+                    </button>
+                </td>
+            </tr>`;
+    });
+}
 
-    // 3. PREPARAR MODAL PARA NUEVO
-    function prepararNuevoProducto() {
-        editando = false;
-        document.getElementById('prod-id').value = "";
-        document.getElementById('formInventario').reset();
+// 3. PREPARAR MODAL PARA NUEVO
+function prepararNuevoProducto() {
+    editando = false;
+    document.getElementById('prod-id').value = "";
+    document.getElementById('formInventario').reset();
+    new bootstrap.Modal(document.getElementById('modalProducto')).show();
+}
+
+// 4. ABRIR EDITOR CON DATOS CARGADOS
+function abrirEditor(id) {
+    editando = true;
+    const p = todosLosProductos.find(item => item.id_producto === id);
+    if(p) {
+        document.getElementById('prod-id').value = p.id_producto;
+        document.getElementById('prod-nombre').value = p.producto;
+        document.getElementById('prod-tipo').value = p.tipo || '';
+        document.getElementById('prod-peso').value = p.presentacion;
+        document.getElementById('prod-precio').value = p.precio;
+        document.getElementById('prod-stock').value = p.stock;
         new bootstrap.Modal(document.getElementById('modalProducto')).show();
     }
+}
 
-    // 4. ABRIR EDITOR CON DATOS CARGADOS
-    function abrirEditor(id) {
-        editando = true;
-        const p = todosLosProductos.find(item => item.id_producto === id);
-        if(p) {
-            document.getElementById('prod-id').value = p.id_producto;
-            document.getElementById('prod-nombre').value = p.nombre_producto;
-            document.getElementById('prod-tipo').value = p.tipo || '';
-            document.getElementById('prod-peso').value = p.peso_producto;
-            document.getElementById('prod-precio').value = p.precio_unidad;
-            document.getElementById('prod-stock').value = p.cantidad_unidad;
-            new bootstrap.Modal(document.getElementById('modalProducto')).show();
-        }
-    }
-
-    // 5. GUARDAR (CREAR O EDITAR)
-    document.getElementById('formInventario').onsubmit = async (e) => {
-        e.preventDefault();
-        const id = document.getElementById('prod-id').value;
-        const datos = {
-            nombre_producto: document.getElementById('prod-nombre').value,
-            tipo: document.getElementById('prod-tipo').value,
-            peso_producto: document.getElementById('prod-peso').value,
-            precio_unidad: parseFloat(document.getElementById('prod-precio').value),
-            cantidad_unidad: parseInt(document.getElementById('prod-stock').value)
-        };
-
-        const url = editando ? `http://localhost:3000/api/productos/${id}` : 'http://localhost:3000/api/productos';
-        const metodo = editando ? 'PUT' : 'POST';
-
-        try {
-            const res = await fetch(url, {
-                method: metodo,
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(datos)
-            });
-            if(res.ok) {
-                // Forzamos el cierre del modal de forma manual si getInstance falla
-            const modalElement = document.getElementById('modalProducto');
-                bootstrap.Modal.getOrCreateInstance(modalElement).hide();
-            await cargarInventario(); // Esperamos a que recargue la tabla
-            }
-        } catch (err) { alert("Error al guardar"); }
+// 5. GUARDAR (CREAR O EDITAR A HTTPS)
+document.getElementById('formInventario').onsubmit = async (e) => {
+    e.preventDefault();
+    const id = document.getElementById('prod-id').value;
+    const datos = {
+        nombre_producto: document.getElementById('prod-nombre').value,
+        tipo: document.getElementById('prod-tipo').value,
+        peso_producto: document.getElementById('prod-peso').value,
+        precio_unidad: parseFloat(document.getElementById('prod-precio').value),
+        amount: parseInt(document.getElementById('prod-stock').value)
     };
 
+    const url = editando ? `https://localhost:3000/api/productos/${id}` : 'https://localhost:3000/api/productos';
+    const metodo = editando ? 'PUT' : 'POST';
 
-
-    
-
-    // 6. ELIMINAR
-    async function eliminarProducto(id) {
-        if(confirm("¿Estás seguro de eliminar este producto?")) {
-            await fetch(`http://localhost:3000/api/productos/${id}`, { method: 'DELETE' });
-            cargarInventario();
+    try {
+        const res = await fetch(url, {
+            method: metodo,
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(datos)
+        });
+        if(res.ok) {
+            const modalElement = document.getElementById('modalProducto');
+            bootstrap.Modal.getOrCreateInstance(modalElement).hide();
+            await cargarInventario();
         }
-    }
+    } catch (err) { alert("Error al guardar"); }
+};
 
-    // 7. BUSCADOR
-    function filtrarProductos() {
-        const texto = document.getElementById('buscador').value.toLowerCase();
-        const filtrados = todosLosProductos.filter(p => 
-            p.nombre_producto.toLowerCase().includes(texto) || 
-            p.tipo.toLowerCase().includes(texto)
-        );
-        renderizarTabla(filtrados);
+// 6. ELIMINAR
+async function eliminarProducto(id) {
+    if(confirm("¿Estás seguro de eliminar este producto?")) {
+        await fetch(`https://localhost:3000/api/productos/${id}`, { method: 'DELETE' });
+        cargarInventario();
     }
+}
 
-    // EJECUTAR AL CARGAR PÁGINA
-    window.onload = cargarInventario;
+// 7. BUSCADOR
+function filtrarProductos() {
+    const texto = document.getElementById('buscador').value.toLowerCase();
+    const filtrados = todosLosProductos.filter(p => 
+        p.producto.toLowerCase().includes(texto) || 
+        p.tipo.toLowerCase().includes(texto)
+    );
+    renderizarTabla(filtrados);
+}
+
+window.onload = cargarInventario;
 
 </script>
 
